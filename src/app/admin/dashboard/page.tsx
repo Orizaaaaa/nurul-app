@@ -52,7 +52,7 @@ function page({ }: Props) {
     ];
     return (
         <DefaultLayout>
-            <div className="relative bg-secondaryGreen w-full p-3 rounded-xl overflow-hidden">
+            <div className="relative bg-primaryGreen w-full p-3 rounded-xl overflow-hidden">
                 {/* Decorative Circles with background */}
                 <div className="absolute -top-10 -left-10 w-32 h-32  bg-white/35 opacity-30 rounded-full z-0"></div>
                 <div className="absolute top-1/2 left-10 w-16 h-16  bg-white/35 opacity-30 rounded-full z-0"></div>
@@ -60,7 +60,7 @@ function page({ }: Props) {
                 <div className="absolute -bottom-10 -right-10 w-40 h-40  bg-white/35 opacity-20 rounded-full z-0"></div>
 
                 {/* Main Content */}
-                <div className="relative z-10 grid grid-cols-2">
+                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2">
                     <div className="flex justify-center items-center">
                         <div>
                             <h1 className="font-bold text-2xl text-white">Hai admin, selamat datang 👋</h1>
@@ -68,7 +68,7 @@ function page({ }: Props) {
                         </div>
                     </div>
 
-                    <div className="flex justify-center items-center">
+                    <div className="flex justify-center items-center order-1 lg:order-2">
                         <div className="h-40">
                             <Image className="w-full h-full" src={man} alt="dashboard" />
                         </div>
@@ -77,8 +77,7 @@ function page({ }: Props) {
             </div>
 
 
-
-            <div className="grid grid-cols-3 my-5 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 my-5 gap-5">
                 <div className='bg-primaryGreen rounded-xl p-2' >
                     <div className="flex gap-3 items-center">
                         <IoPeople size={20} color='white' />
