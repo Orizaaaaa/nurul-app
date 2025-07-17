@@ -10,7 +10,7 @@ type Props = {
 
 const ButtonPrimary = ({ children, onClick, className, disabled, typeButon = 'button' }: Props) => {
     return (
-        <button type={typeButon} disabled={disabled} className={`bg-primary  text-white  ${className}`} onClick={onClick}  >
+        <button type={typeButon} disabled={disabled} className={`bg-primaryGreen  text-white  ${className}`} onClick={onClick}  >
             {children}
         </button >
     )
