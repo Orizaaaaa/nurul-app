@@ -1,5 +1,7 @@
+'use client'
 import { man } from '@/app/image'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { getKeyValue, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react'
 import Image from 'next/image'
 import React from 'react'
 import { IoPeople } from 'react-icons/io5'
@@ -7,6 +9,47 @@ import { IoPeople } from 'react-icons/io5'
 type Props = {}
 
 function page({ }: Props) {
+    const rows = [
+        {
+            key: "1",
+            name: "Tony Reichert",
+            role: "CEO",
+            status: "Active",
+        },
+        {
+            key: "2",
+            name: "Zoey Lang",
+            role: "Technical Lead",
+            status: "Paused",
+        },
+        {
+            key: "3",
+            name: "Jane Fisher",
+            role: "Senior Developer",
+            status: "Active",
+        },
+        {
+            key: "4",
+            name: "William Howard",
+            role: "Community Manager",
+            status: "Vacation",
+        },
+    ];
+
+    const columns = [
+        {
+            key: "name",
+            label: "NAME",
+        },
+        {
+            key: "role",
+            label: "ROLE",
+        },
+        {
+            key: "status",
+            label: "STATUS",
+        },
+    ];
     return (
         <DefaultLayout>
             <div className="relative bg-secondaryGreen w-full p-3 rounded-xl overflow-hidden">
@@ -61,6 +104,22 @@ function page({ }: Props) {
                     </div>
                     <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
                 </div>
+            </div>
+
+            <div className="mt-5 mb-4">
+                <h1 className='text-xl font-bold text-primaryGreen italic' >Terakhir di kembalikan</h1>
+                <Table >
+                    <TableHeader columns={columns}>
+                        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                    </TableHeader>
+                    <TableBody items={rows}>
+                        {(item) => (
+                            <TableRow key={item.key}>
+                                {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
             </div>
         </DefaultLayout>
 
