@@ -26,7 +26,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable}  antialiased `}
+        className={`${inter.variable}  
+        antialiased 
+          [&::-webkit-scrollbar]:w-2
+      [&::-webkit-scrollbar-track]:rounded-full
+      [&::-webkit-scrollbar-track]:bg-gray-100
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-thumb]:bg-gray-300
+      dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+      dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500`}
         suppressHydrationWarning={true}
       >
         <HeroUIProvider >
