@@ -106,7 +106,7 @@ function page({ }: Props) {
             </div>
 
             <div className="mt-5 mb-4">
-                <h1 className='text-xl font-bold text-primaryGreen italic' >Terakhir di kembalikan</h1>
+                <h1 className='text-xl font-bold text-primaryGreen italic mb-2' >Terakhir di kembalikan</h1>
                 <Table >
                     <TableHeader columns={columns}>
                         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
