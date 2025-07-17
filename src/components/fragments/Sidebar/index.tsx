@@ -7,7 +7,7 @@ import { RxDashboard } from "react-icons/rx";
 import { logo, realLogo } from "@/app/image";
 import Image from "next/image";
 import { IoPricetags, IoReceiptOutline, IoStorefront } from "react-icons/io5";
-import { FaUserGear } from "react-icons/fa6";
+import { FaMoneyBillTransfer, FaUserGear } from "react-icons/fa6";
 import ButtonSecondary from "@/components/elements/buttonSecondary";
 import { LuBookDown, LuBookPlus } from "react-icons/lu";
 import { MdDashboard, MdOutlineLibraryBooks } from "react-icons/md";
@@ -121,9 +121,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
             <ul className="mb-6 flex flex-col gap-1.5">
               {/* <!-- Menu Item Dashboard --> */}
               <NavigationList icon={<MdDashboard size={24} />} title="Home" pathname="admin/dashboard" />
-              <NavigationList icon={<BsPersonFillGear size={24} />} title="Permintaan Surat" pathname="/request_message" />
-              <NavigationList icon={<LuBookPlus size={24} />} title="Buat Surat" pathname="/create_message" />
-              <NavigationList icon={<SiGitbook size={24} />} title="Semua Surat" pathname="/all_message" />
+              <NavigationList icon={<BsPersonFillGear size={24} />} title="Riwayat Peminjaman" pathname="/request_message" />
+              <NavigationList icon={<SiGitbook size={24} />} title="Kelola Buku" pathname="/all_message" />
+              <NavigationList icon={<TbMoneybag size={24} />} title="Denda" pathname="/all_message" />
               <ButtonSecondary className="w-full py-1 rounded-md font-medium mt-20 cursor-pinter" onClick={handleLogout} >Logout</ButtonSecondary>
               {/* <!-- Menu Item Calendar -->
               <NavigationList icon={<IoCalendarOutline size={19} />} title="Calendar" pathname="/calendar" /> */}
