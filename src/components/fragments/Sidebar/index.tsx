@@ -77,6 +77,33 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     route.push("/")
   }
 
+  const sideBarRole = (value: any) => {
+    if (value === "admin") {
+      return (
+        <>
+          <NavigationList icon={<MdDashboard size={24} />} title="Home" pathname="admin/dashboard" />
+          <NavigationList icon={<BsPersonFillGear size={24} />} title="Riwayat Peminjaman" pathname="/request_message" />
+          <NavigationList icon={<SiGitbook size={24} />} title="Kelola Buku" pathname="/all_message" />
+          <NavigationList icon={<TbMoneybag size={24} />} title="Denda" pathname="/all_message" />
+          <ButtonSecondary className="w-full py-1 rounded-md font-medium mt-20 cursor-pointer" onClick={handleLogout}>
+            Logout
+          </ButtonSecondary>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <NavigationList icon={<MdDashboard size={24} />} title="Home" pathname="user/dashboard" />
+          <NavigationList icon={<MdDashboard size={24} />} title="Semua Buku" pathname="user/book_list" />
+          <NavigationList icon={<MdDashboard size={24} />} title="Buku Saya" pathname="user/my_book" />
+          <NavigationList icon={<MdDashboard size={24} />} title="Riwayat" pathname="user/history" />
+          <NavigationList icon={<MdDashboard size={24} />} title="Denda" pathname="user/fines" />
+        </>
+      );
+    }
+  };
+
+
   return (
     <aside
       ref={sidebar}
@@ -120,11 +147,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <div>
             <ul className="mb-6 flex flex-col gap-1.5">
               {/* <!-- Menu Item Dashboard --> */}
-              <NavigationList icon={<MdDashboard size={24} />} title="Home" pathname="admin/dashboard" />
-              <NavigationList icon={<BsPersonFillGear size={24} />} title="Riwayat Peminjaman" pathname="/request_message" />
-              <NavigationList icon={<SiGitbook size={24} />} title="Kelola Buku" pathname="/all_message" />
-              <NavigationList icon={<TbMoneybag size={24} />} title="Denda" pathname="/all_message" />
-              <ButtonSecondary className="w-full py-1 rounded-md font-medium mt-20 cursor-pinter" onClick={handleLogout} >Logout</ButtonSecondary>
+              {sideBarRole('user')}
               {/* <!-- Menu Item Calendar -->
               <NavigationList icon={<IoCalendarOutline size={19} />} title="Calendar" pathname="/calendar" /> */}
 
