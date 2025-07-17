@@ -4,13 +4,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import NavigationList from "../NavigationList/NavigationList";
 import { RxDashboard } from "react-icons/rx";
+import { FaBook, FaBookBookmark } from "react-icons/fa6";
 import { logo, realLogo } from "@/app/image";
 import Image from "next/image";
 import { IoPricetags, IoReceiptOutline, IoStorefront } from "react-icons/io5";
 import { FaMoneyBillTransfer, FaUserGear } from "react-icons/fa6";
 import ButtonSecondary from "@/components/elements/buttonSecondary";
 import { LuBookDown, LuBookPlus } from "react-icons/lu";
-import { MdDashboard, MdOutlineLibraryBooks } from "react-icons/md";
+import { MdDashboard, MdHistory, MdOutlineLibraryBooks } from "react-icons/md";
 import { RiBook2Line } from "react-icons/ri";
 import { TbMoneybag } from "react-icons/tb";
 import { HiOutlineArchiveBox } from "react-icons/hi2";
@@ -94,10 +95,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       return (
         <>
           <NavigationList icon={<MdDashboard size={24} />} title="Home" pathname="user/dashboard" />
-          <NavigationList icon={<MdDashboard size={24} />} title="Semua Buku" pathname="user/book_list" />
-          <NavigationList icon={<MdDashboard size={24} />} title="Buku Saya" pathname="user/my_book" />
-          <NavigationList icon={<MdDashboard size={24} />} title="Riwayat" pathname="user/history" />
-          <NavigationList icon={<MdDashboard size={24} />} title="Denda" pathname="user/fines" />
+          <NavigationList icon={<SiGitbook size={24} />} title="Semua Buku" pathname="user/book_list" />
+          <NavigationList icon={<FaBook size={24} />} title="Buku Saya" pathname="user/my_book" />
+          <NavigationList icon={<MdHistory size={24} />} title="Riwayat" pathname="user/history" />
+          <NavigationList icon={<TbMoneybag size={24} />} title="Denda" pathname="user/fines" />
         </>
       );
     }
