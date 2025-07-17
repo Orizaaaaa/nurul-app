@@ -9,7 +9,7 @@ type Props = {
 
 const ButtonSecondary = ({ children, onClick, className }: Props) => {
     return (
-        <button className={`bg-white border-2 border-black  text-black  ${className}`} onClick={onClick}  >
+        <button className={`bg-white border-2 border-primaryGreen  text-primaryGreen  ${className}`} onClick={onClick}  >
             {children}
         </button >
     )
