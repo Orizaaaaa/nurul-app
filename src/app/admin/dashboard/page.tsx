@@ -2,6 +2,7 @@ import { man } from '@/app/image'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import Image from 'next/image'
 import React from 'react'
+import { IoPeople } from 'react-icons/io5'
 
 type Props = {}
 
@@ -34,8 +35,32 @@ function page({ }: Props) {
 
 
 
-            <div className="grid grid-cols-3">
+            <div className="grid grid-cols-3 my-5 gap-5">
+                <div className='bg-primaryGreen rounded-xl p-2' >
+                    <div className="flex gap-3 items-center">
+                        <IoPeople size={20} color='white' />
+                        <h1 className='text-white' >Jumlah Peminjam saat ini</h1>
 
+                    </div>
+                    <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
+                </div>
+                <div className='bg-primaryGreen rounded-xl p-2' >
+                    <div className="flex gap-3 items-center">
+                        <IoPeople size={20} color='white' />
+                        <h1 className='text-white' >Jumlah Peminjam saat ini</h1>
+
+                    </div>
+                    <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
+                </div>
+
+                <div className='bg-primaryGreen rounded-xl p-2' >
+                    <div className="flex gap-3 items-center">
+                        <IoPeople size={20} color='white' />
+                        <h1 className='text-white' >Jumlah Peminjam saat ini</h1>
+
+                    </div>
+                    <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
+                </div>
             </div>
         </DefaultLayout>
 
