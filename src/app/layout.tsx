@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-
+import 'swiper/css';
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { HeroUIProvider } from "@heroui/react";

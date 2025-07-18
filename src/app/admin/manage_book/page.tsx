@@ -42,92 +42,9 @@ const page = (props: Props) => {
                         <h1 className='text-sm ' >89 Stock</h1>
                         <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
                     </div>
-
                 </div>
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
-                    </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
 
-                </div>
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
-                    </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
 
-                </div>
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
-                    </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
-
-                </div>
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
-                    </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
-
-                </div>
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
-                    </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
-
-                </div>
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
-                    </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
-
-                </div>
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
-                    </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
-
-                </div>
                 <div className='shadow-xl rounded-lg' >
                     <div className=" flex justify-center items-center">
                         <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
