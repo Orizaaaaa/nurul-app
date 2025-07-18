@@ -19,7 +19,9 @@ const page = (props: Props) => {
         author: '',
         stock: 0,
         rak: '',
-        price: 0
+        price: 0,
+        borrowDate: '', // string (format ISO) atau Date
+        returnDate: '', // string (format ISO) atau Date
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -123,7 +125,7 @@ const page = (props: Props) => {
                     />
 
                     <div className="flex justify-center items-center gap-3 my-3">
-                        <button className={`border-2 border-primary text-primary px-2 py-1 rounded-md ${form.image === null ? 'hidden' : ''}`} type="button" onClick={() => handleFileManager('add')}>
+                        <button className={`border-2 text-sm border-primaryGreen text-primaryGreen px-2 py-1 rounded-md ${form.image === null ? 'hidden' : ''}`} type="button" onClick={() => handleFileManager('add')}>
                             Ubah Gambar
                         </button>
                     </div>
