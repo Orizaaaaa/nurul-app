@@ -6,24 +6,58 @@ import ModalDefault from '@/components/fragments/modal/modal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { useDisclosure } from '@heroui/react'
 import { title } from 'process'
-import React from 'react'
+import React, { useMemo } from 'react'
+import { IoCameraOutline } from 'react-icons/io5'
 
 type Props = {}
 
 const page = (props: Props) => {
     const { onOpen, onClose, isOpen } = useDisclosure();
     const [form, setForm] = React.useState({
-        image: '',
+        image: null as File | null,
         title: '',
         author: '',
         stock: 0,
-        rak: ''
+        rak: '',
+        price: 0
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setForm({ ...form, [name]: value });
     };
+
+    //input gambar
+    const handleFileManager = (fileName: string) => {
+        if (fileName === 'add') {
+            const fileInput = document.getElementById("image-input-add") as HTMLInputElement | null;
+            fileInput ? fileInput.click() : null;
+        } else {
+            console.log('error');
+
+        }
+    };
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, InputSelect: string) => {
+        if (InputSelect === 'add') {
+            const selectedImage = e.target.files?.[0];
+            setForm({ ...form, image: selectedImage || null });
+        } else {
+            console.log('error');
+
+        }
+    };
+
+    /* The most important point */
+    const config: any = useMemo(
+        () => ({
+            /* Custom image uploader button configuration to accept image and convert it to base64 format */
+            uploader: {
+                insertImageAsBase64URI: true,
+                imagesExtensions: ['jpg', 'png', 'jpeg', 'gif', 'svg', 'webp'] // this line is not much important, use if you only strictly want to allow some specific image format
+            },
+        }),
+        []
+    );
     return (
         <DefaultLayout>
             <div className="flex items-center justify-between">
@@ -59,12 +93,46 @@ const page = (props: Props) => {
                 </div>
             </div>
             <ModalDefault isOpen={isOpen} onClose={onClose}>
+
                 <h1 className='text-xl font-medium mb-4' >Tambah Buku</h1>
+                <div className="images">
+
+                    {form.image && form.image instanceof Blob ? (
+                        <img
+                            className="h-[20px] md:h-[100px] w-[70px] mx-auto rounded-md object-cover"
+                            src={URL.createObjectURL(form.image)}
+                        />
+                    ) : (
+                        <div className="images rounded-md h-[50px] bg-gray-300 flex justify-center items-center">
+                            <button
+                                className="flex justify-center items-center h-full w-full"
+                                type="button"
+                                onClick={() => handleFileManager('add')}
+                            >
+                                <IoCameraOutline className="text-2xl" />
+                            </button>
+                        </div>
+                    )}
+
+
+                    <input
+                        type="file"
+                        className="hidden"
+                        id="image-input-add"
+                        onChange={(e) => handleImageChange(e, 'add')}
+                    />
+
+                    <div className="flex justify-center items-center gap-3 my-3">
+                        <button className={`border-2 border-primary text-primary px-2 py-1 rounded-md ${form.image === null ? 'hidden' : ''}`} type="button" onClick={() => handleFileManager('add')}>
+                            Ubah Gambar
+                        </button>
+                    </div>
+                </div>
                 <InputForm
                     className="bg-green-700/30"
                     type="text"
                     value={form.title}
-
+                    marginDiown='mb-0'
                     htmlFor="title"
                     title="Judul Buku"
                     placeholder="Masukan Judul Buku"
@@ -75,34 +143,50 @@ const page = (props: Props) => {
                     className="bg-green-700/30"
                     type="text"
                     value={form.author}
-
+                    marginDiown='mb-0'
                     htmlFor="author"
                     title="Penulis Buku"
                     placeholder="Masukan Penulis Buku"
                     onChange={handleChange}
                 />
 
-                <InputForm
-                    className="bg-green-700/30"
-                    type="number"
-                    value={form.stock}
+                <div className="flex gap-5">
+                    <InputForm
+                        className="bg-green-700/30"
+                        type="number"
+                        value={form.stock}
+                        marginDiown='mb-0'
+                        htmlFor="stock"
+                        title="Stok Buku"
+                        placeholder="Masukan Jumlah Stok"
+                        onChange={handleChange}
+                    />
 
-                    htmlFor="stock"
-                    title="Stok Buku"
-                    placeholder="Masukan Jumlah Stok"
-                    onChange={handleChange}
-                />
+                    <InputForm
+                        className="bg-green-700/30"
+                        type="text"
+                        value={form.price}
+                        marginDiown='mb-0'
+                        htmlFor="rak"
+                        title="Harga Buku"
+                        placeholder="Masukan Harga Buku"
+                        onChange={handleChange}
+                    />
+
+                </div>
 
                 <InputForm
                     className="bg-green-700/30"
                     type="text"
                     value={form.rak}
-
+                    marginDiown='mb-0'
                     htmlFor="rak"
                     title="Lokasi Rak"
                     placeholder="Masukan Lokasi Rak"
                     onChange={handleChange}
                 />
+
+
 
                 <div className="flex justify-end">
                     <div className="flex">

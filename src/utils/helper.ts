@@ -1,3 +1,5 @@
+import { storage } from "@/lib/firebase/firebaseConfig";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 export const formatDate = (tanggal: any) => {
     if (!tanggal) {
@@ -150,3 +152,33 @@ export const columns = [
         label: "STATUS",
     },
 ];
+
+export const uploadImage = (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+        // Buat referensi ke lokasi di Firebase Storage
+        const storageRef = ref(storage, `images/${file.name}`);
+
+        // Upload file ke Firebase Storage
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        // Monitor status upload
+        uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+                // Progress upload dapat ditampilkan di sini (optional)
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log("Upload is " + progress + "% done");
+            },
+            (error) => {
+                // Tangani kesalahan upload
+                reject(error);
+            },
+            () => {
+                // Dapatkan URL gambar setelah upload selesai
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    resolve(downloadURL); // Kirim URL download gambar
+                });
+            }
+        );
+    });
+};
