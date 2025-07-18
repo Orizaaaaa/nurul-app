@@ -4,6 +4,8 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { getKeyValue, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react'
 import Image from 'next/image'
 import React from 'react'
+import { FaMoneyBillTransfer } from 'react-icons/fa6'
+import { ImBook } from 'react-icons/im'
 import { IoPeople } from 'react-icons/io5'
 
 type Props = {}
@@ -80,7 +82,7 @@ function page({ }: Props) {
             <div className="grid grid-cols-1 md:grid-cols-3 my-5 gap-5">
                 <div className='bg-primaryGreen rounded-xl p-2' >
                     <div className="flex gap-3 items-center">
-                        <IoPeople size={20} color='white' />
+                        <IoPeople size={25} color='white' />
                         <h1 className='text-white' >Jumlah Peminjam saat ini</h1>
 
                     </div>
@@ -88,20 +90,18 @@ function page({ }: Props) {
                 </div>
                 <div className='bg-primaryGreen rounded-xl p-2' >
                     <div className="flex gap-3 items-center">
-                        <IoPeople size={20} color='white' />
-                        <h1 className='text-white' >Jumlah Peminjam saat ini</h1>
-
+                        <ImBook size={20} color='white' />
+                        <h1 className='text-white' >Jumlah Buku saat ini</h1>
                     </div>
                     <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
                 </div>
 
                 <div className='bg-primaryGreen rounded-xl p-2' >
                     <div className="flex gap-3 items-center">
-                        <IoPeople size={20} color='white' />
-                        <h1 className='text-white' >Jumlah Peminjam saat ini</h1>
-
+                        <FaMoneyBillTransfer size={22} color='white' />
+                        <h1 className='text-white' >Total Semua Denda</h1>
                     </div>
-                    <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
+                    <h1 className='text-white text-3xl font-bold mt-3' >Rp.1000.000</h1>
                 </div>
             </div>
 
