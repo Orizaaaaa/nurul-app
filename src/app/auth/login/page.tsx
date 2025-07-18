@@ -14,6 +14,7 @@ import { loginService } from '@/api/auth';
 
 import { Spinner } from '@heroui/react';
 import { realLogo } from '../../image';
+import { loginUser } from '@/lib/firebase/firestore';
 
 const Login = () => {
     const router = useRouter();
@@ -48,7 +49,7 @@ const Login = () => {
         let isValid = true;
         let errors = { email: '', password: '' };
 
-        // Validasi email tidak boleh kosong dan harus sesuai format
+        // Validasi email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!form.email) {
             errors.email = '*Email tidak boleh kosong';
@@ -58,7 +59,7 @@ const Login = () => {
             isValid = false;
         }
 
-        // Validasi password tidak boleh kosong dan harus lebih dari 8 karakter
+        // Validasi password
         if (!form.password) {
             errors.password = '*Password tidak boleh kosong';
             isValid = false;
@@ -67,45 +68,35 @@ const Login = () => {
             isValid = false;
         }
 
-        // Jika tidak valid, set error dan hentikan proses
         if (!isValid) {
             setErrorMsg(errors);
             setLoading(false);
             return;
         }
 
-        // Reset error messages
         setErrorMsg({ email: '', password: '' });
 
-        // Lakukan login
-        await loginService(form, (status: boolean, res: any) => {
-            if (status) {
-                console.log('kanjut', res.data);
-                setErrorLogin('');
-                const tokenCookies = `token=${res.data.token}`;
-                const roleCookies = `role=${res.data.role}`;
-                document.cookie = tokenCookies; // Set cookie
-                document.cookie = roleCookies; // Set cookie
-                localStorage.setItem('name', res.data.user.name);
-                localStorage.setItem('id', res.data.id);
-                localStorage.setItem('image', res.data.image);
-                localStorage.setItem('role', res.data.user.role);
-                localStorage.setItem('token', res.data.token);
-                setLoading(false);
+        try {
+            const userData = await loginUser(form.email, form.password);
 
-                // Redirect berdasarkan role
-                if (res.data.user.role === 'user') {
-                    router.push('/user_page');
-                } else if (res.data.user.role === 'admin') {
-                    router.push('/dashboard');
-                }
-            } else {
-                setErrorLogin('*Email atau password salah');
-                console.log(res.data);
-                setLoading(false);
-            }
-        });
+            console.log("User berhasil login:", userData);
+
+            // ✅ Simpan data user ke localStorage / context jika dibutuhkan
+            localStorage.setItem('user', JSON.stringify(userData));
+
+            // Redirect ke dashboard atau halaman utama
+            router.push("/dashboard");
+
+        } catch (error: any) {
+            setErrorMsg((prev) => ({
+                ...prev,
+                password: error.message || "Gagal login",
+            }));
+        } finally {
+            setLoading(false);
+        }
     };
+
 
 
     return (

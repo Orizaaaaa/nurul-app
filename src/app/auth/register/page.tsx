@@ -15,9 +15,11 @@ import { formatDate, formatDateStr } from "@/utils/helper";
 import { parseDate } from '@internationalized/date'
 import { address } from "framer-motion/client";
 import DropdownCustom from "@/components/dropdown/dropdownCustom";
-import { registerUser } from "@/api/auth";
+
 import Image from "next/image";
 import { realLogo } from "@/app/image";
+import toast from "react-hot-toast";
+import { registerUser } from "@/api/method";
 // Pastikan ini ada
 
 const Register = () => {
@@ -35,13 +37,9 @@ const Register = () => {
         confirmPassword: '',
         role: 'user',
         phone: '',
-        nis: '',
-        nisn: '',
         address: '',
         place_of_birth: '',
         birthdate: parseDate(formatDate(dateNow)),
-        gender: '',
-        image: '',
         class_name: '',
     });
 
@@ -50,17 +48,13 @@ const Register = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        image: '',
-        role: '',
+        role: 'user',
         phone: '',
+        address: '',
         place_of_birth: '',
         birthdate: '',
-        gender: '',
         class_name: '',
-        nis: '',
-        nisn: '',
-        address: '',
-        responErrorApi: '',
+        responErrorApi: ''
     });
 
     const togglePassword = () => {
@@ -107,14 +101,13 @@ const Register = () => {
         const newErrorMsg = {
             name: '', email: '', password: '', confirmPassword: '', image: '', role: '',
             phone: '', place_of_birth: '', birthdate: '',
-            gender: '', class_name: '', nis: '', nisn: '', address: '', responErrorApi: ''
+            gender: '', class_name: '', address: '', responErrorApi: ''
         };
         let valid = true;
 
         const nameRegex = /^[A-Za-z\s\-\_\'\.\,\&\(\)]{1,100}$/;
         const emailRegex = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/;
         const passwordRegex = /^[A-Za-z0-9]+$/;
-        const numberRegex = /^[0-9]+$/;
         const phoneRegex = /^628[0-9]{8,}$/;
 
         if (!form.name || !nameRegex.test(form.name)) {
@@ -152,15 +145,7 @@ const Register = () => {
             valid = false;
         }
 
-        if (!form.gender) {
-            newErrorMsg.gender = '*Jenis kelamin wajib dipilih';
-            valid = false;
-        }
 
-        if (!form.place_of_birth) {
-            newErrorMsg.place_of_birth = '*Tempat lahir wajib diisi';
-            valid = false;
-        }
         if (!form.address) {
             newErrorMsg.address = '*Alamat wajib diisi';
             valid = false;
@@ -178,30 +163,27 @@ const Register = () => {
             return;
         }
 
-        // Jika lolos validasi
-
+        // Format tanggal lahir dan hapus confirmPassword
         const { confirmPassword, ...dataWithoutConfirmPassword } = form;
 
         const data = {
             ...dataWithoutConfirmPassword,
-            birthdate: formatDateStr(form.birthdate), // pastikan penamaan tepat
+            birthdate: formatDateStr(form.birthdate), // pastikan formatDateStr mengubah ke format string ISO
         };
 
-        console.log('data boss', data);
+        try {
 
-
-        registerUser(data, (status: boolean, res: any) => {
-            if (res) {
-                console.log(res);
-            }
-            if (status) {
-                router.push('/');
-            } else {
-                setErrorMsg((prev) => ({ ...prev, responErrorApi: 'Email atau Password salah' }));
-            }
+            await registerUser(data);
+            toast.success('Registrasi berhasil!');
+            // redirect ke halaman lain jika perlu
+        } catch (err: any) {
+            setErrorMsg((prev) => ({ ...prev, responErrorApi: err.message }));
+            toast.error('Registrasi gagal: ' + err.message);
+        } finally {
             setLoading(false);
-        });
+        }
     };
+
 
     const dataStatus = [
         { key: "laki-laki", label: "Laki-laki", value: "Laki-laki" },
@@ -240,9 +222,6 @@ const Register = () => {
                     <InputForm className='bg-slate-300' errorMsg={errorMsg.place_of_birth} placeholder='Tempat Lahir' type='text' htmlFor='place_of_birth' value={form.place_of_birth} onChange={handleChange} />
                     <InputForm className='bg-slate-300' errorMsg={errorMsg.class_name} placeholder='Nama Kelas' type='text' htmlFor='class_name' value={form.class_name} onChange={handleChange} />
 
-
-
-
                     <div className="date w-full my-2">
                         <DatePicker
                             label='Tanggal Lahir'
@@ -276,7 +255,7 @@ const Register = () => {
                         <InputForm className='bg-slate-300' errorMsg={errorMsg.confirmPassword} htmlFor="confirmPassword" onChange={handleChange} type={typeConfirmPassword} value={form.confirmPassword} placeholder="Konfirmasi Kata Sandi" />
                     </div>
 
-                    <ButtonPrimary disabled={loading} typeButon="submit" className="rounded-lg cursor-pointer w-full mb-3 font-medium py-2 flex justify-center items-center
+                    <ButtonPrimary typeButon="submit" className="rounded-lg cursor-pointer w-full mb-3 font-medium py-2 flex justify-center items-center
                      bg-primary" >
                         {loading ? <Spinner color="white" /> : 'Daftar'}
                     </ButtonPrimary>
