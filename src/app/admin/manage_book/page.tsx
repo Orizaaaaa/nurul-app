@@ -1,5 +1,5 @@
 'use client'
-import { createBook, postImage } from '@/api/method'
+import { createBook, getAllBooks, postImage } from '@/api/method'
 import ButtonPrimary from '@/components/elements/buttonPrimary'
 import ButtonSecondary from '@/components/elements/buttonSecondary'
 import InputForm from '@/components/elements/input/InputForm'
@@ -7,7 +7,7 @@ import ModalDefault from '@/components/fragments/modal/modal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { useDisclosure } from '@heroui/react'
 import { title } from 'process'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { IoCameraOutline } from 'react-icons/io5'
 
@@ -15,6 +15,7 @@ type Props = {}
 
 const page = (props: Props) => {
     const { onOpen, onClose, isOpen } = useDisclosure();
+    const [data, setData]: any = React.useState([])
     const [form, setForm] = React.useState({
         image: null as File | null,
         title: '',
@@ -23,6 +24,19 @@ const page = (props: Props) => {
         rak: '',
         price: 0,
     })
+
+    useEffect(() => {
+        const fetchBooks = async () => {
+            try {
+                const books = await getAllBooks();
+                setData(books);
+            } catch (err) {
+                console.error('Gagal mengambil data buku:', err);
+            }
+        };
+
+        fetchBooks();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -101,6 +115,8 @@ const page = (props: Props) => {
         }
     };
 
+    console.log(data);
+
 
     return (
         <DefaultLayout>
@@ -110,32 +126,21 @@ const page = (props: Props) => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
+                {data.map((item: any) => (
+                    <div className='shadow-xl rounded-lg' >
+                        <div className=" flex justify-center items-center">
+                            <img className=' rounded-t-lg h-40 w-full' src={item.image} alt="" />
+                        </div>
+                        <div className='p-2'   >
+                            <p className='text-sm mt-2 text-gray-400' >{item.author}</p>
+                            <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
+                            <h1 className='text-sm ' >{item.stock}</h1>
+                            <h1 className='text-sm text-gray-400' >Rak nomor {item.rak}</h1>
+                        </div>
                     </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
-                </div>
-
-
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
-                    </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
-
-                </div>
+                ))}
             </div>
+
             <ModalDefault isOpen={isOpen} onClose={onClose}>
 
                 <h1 className='text-xl font-medium mb-4' >Tambah Buku</h1>
