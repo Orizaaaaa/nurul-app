@@ -114,44 +114,62 @@ export function truncateText(text: string, maxLength: number, suffix: string = '
 export const rows = [
     {
         key: "1",
-        name: "Tony Reichert",
-        role: "CEO",
-        status: "Active",
+        name: "Laskar Pelangi",
+        status: "Dipinjam",
+        tanggalPinjam: "2025-07-10",
+        tanggalKembali: "2025-07-17",
+        denda: "Rp0",
     },
     {
         key: "2",
-        name: "Zoey Lang",
-        role: "Technical Lead",
-        status: "Paused",
+        name: "Atomic Habits",
+        status: "Dikembalikan",
+        tanggalPinjam: "2025-07-01",
+        tanggalKembali: "2025-07-08",
+        denda: "Rp0",
     },
     {
         key: "3",
-        name: "Jane Fisher",
-        role: "Senior Developer",
-        status: "Active",
+        name: "Sapiens: A Brief History of Humankind",
+        status: "Terlambat",
+        tanggalPinjam: "2025-06-20",
+        tanggalKembali: "2025-07-05",
+        denda: "Rp15.000",
     },
     {
         key: "4",
-        name: "William Howard",
-        role: "Community Manager",
-        status: "Vacation",
+        name: "Rich Dad Poor Dad",
+        status: "Dipinjam",
+        tanggalPinjam: "2025-07-15",
+        tanggalKembali: "-",
+        denda: "Rp0",
     },
 ];
+
 
 export const columns = [
     {
         key: "name",
-        label: "NAME",
-    },
-    {
-        key: "role",
-        label: "ROLE",
+        label: "NAMA BUKU",
     },
     {
         key: "status",
-        label: "STATUS",
+        label: "STATUS PEMINJAMAN",
+    },
+    {
+        key: "tanggalPinjam",
+        label: "TANGGAL DIPINJAM",
+    },
+    {
+        key: "tanggalKembali",
+        label: "TANGGAL DIKEMBALIKAN",
+    },
+    {
+        key: "denda",
+        label: "DENDA",
     },
 ];
+
 
 export const uploadImage = (file: File) => {
     return new Promise<string>((resolve, reject) => {

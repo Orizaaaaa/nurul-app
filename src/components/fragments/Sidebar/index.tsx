@@ -101,7 +101,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <>
           <NavigationList icon={<MdDashboard size={24} />} title="Home" pathname="/user/dashboard" />
           <NavigationList icon={<SiGitbook size={24} />} title="Semua Buku" pathname="/user/book_list" />
-          <NavigationList icon={<FaBook size={24} />} title="Buku Saya" pathname="/user/my_book" />
           <NavigationList icon={<MdHistory size={24} />} title="Riwayat Peminjaman" pathname="/user/history" />
           <NavigationList icon={<TbMoneybag size={24} />} title="Denda Saya" pathname="/user/fines" />
           <ButtonSecondary className="w-full py-1 rounded-md font-medium mt-20 cursor-pointer" onClick={handleLogout}>
