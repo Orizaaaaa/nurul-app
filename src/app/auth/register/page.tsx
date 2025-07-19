@@ -35,7 +35,7 @@ const Register = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'user',
+        role: 'admin',
         phone: '',
         address: '',
         place_of_birth: '',
@@ -48,7 +48,7 @@ const Register = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'user',
+        role: 'admin',
         phone: '',
         address: '',
         place_of_birth: '',
@@ -175,6 +175,7 @@ const Register = () => {
 
             await registerUser(data);
             toast.success('Registrasi berhasil!');
+            router.push('/auth/login');
             // redirect ke halaman lain jika perlu
         } catch (err: any) {
             setErrorMsg((prev) => ({ ...prev, responErrorApi: err.message }));
@@ -260,7 +261,7 @@ const Register = () => {
                         {loading ? <Spinner color="white" /> : 'Daftar'}
                     </ButtonPrimary>
                     {errorMsg.responErrorApi && <p className="text-red-800 text-xs mt-1">{errorMsg.responErrorApi}</p>}
-                    <p className='text-sm'>Sudah punya akun? <Link href="/" className='text-primary font-medium'>Masuk</Link></p>
+                    <p className='text-sm'>Sudah punya akun? <Link href="/auth/login" className='text-primary font-medium'>Masuk</Link></p>
                 </form>
             </div>
         </div>

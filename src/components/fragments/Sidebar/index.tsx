@@ -25,7 +25,8 @@ interface SidebarProps {
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
-  const userData = JSON.parse(localStorage.getItem('user') || '{}');
+  const [userData, setUserData]: any = useState({})
+
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -53,6 +54,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   // close if the esc key is pressed
   useEffect(() => {
+    setUserData(JSON.parse(localStorage.getItem('user') || '{}'));
     const keyHandler = ({ key }: KeyboardEvent) => {
       if (!sidebarOpen || key !== "Escape") return;
       setSidebarOpen(false);
