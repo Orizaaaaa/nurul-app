@@ -1,14 +1,29 @@
 'use client'
+import { getAllBooks } from '@/api/method'
 import ButtonSecondary from '@/components/elements/buttonSecondary'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { truncateText } from '@/utils/helper'
 import { useDisclosure } from '@heroui/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { IoSearch } from 'react-icons/io5'
 
 type Props = {}
 
 const page = (props: Props) => {
+    const [data, setData]: any = React.useState([])
+    const fetchBooks = async () => {
+        try {
+            const books = await getAllBooks();
+            setData(books);
+        } catch (err) {
+            console.error('Gagal mengambil data buku:', err);
+        }
+    };
 
+    useEffect(() => {
+        fetchBooks();
+    }, []);
+    console.log(data);
 
     return (
         <DefaultLayout>
@@ -22,31 +37,31 @@ const page = (props: Props) => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
-                    </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
-                </div>
-
-
-                <div className='shadow-xl rounded-lg' >
-                    <div className=" flex justify-center items-center">
-                        <img className=' rounded-t-lg h-40 w-full' src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg" alt="" />
-                    </div>
-                    <div className='p-2'   >
-                        <p className='text-sm mt-2 text-gray-400' >Gabriel Yonatan</p>
-                        <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                        <h1 className='text-sm ' >89 Stock</h1>
-                        <h1 className='text-sm text-gray-400' >Rak nomor 28</h1>
-                    </div>
-
-                </div>
+                {
+                    data.map((item: any) => {
+                        return (
+                            <div className='shadow-xl rounded-lg flex flex-col h-full' key={item.id}>
+                                <div className="flex justify-center items-center">
+                                    <img
+                                        className='rounded-t-lg h-40 w-full object-cover'
+                                        src={item.image}
+                                        alt={item.title}
+                                    />
+                                </div>
+                                <div className='p-2 flex flex-col flex-grow'>
+                                    <div className="mb-2">
+                                        <p className='text-sm text-gray-400 line-clamp-1'>{item.author}</p>
+                                        <h1 className='text-sm font-semibold line-clamp-2'>{truncateText(item.title, 38)}</h1>
+                                    </div>
+                                    <div className="mt-auto">
+                                        <h1 className='text-sm'>Stok {item.stock}</h1>
+                                        <h1 className='text-sm text-gray-400'>Rak nomor {item.rack}</h1>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })
+                }
             </div>
         </DefaultLayout>
     )
