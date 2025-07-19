@@ -20,8 +20,6 @@ const page = (props: Props) => {
         stock: 0,
         rak: '',
         price: 0,
-        borrowDate: '', // string (format ISO) atau Date
-        returnDate: '', // string (format ISO) atau Date
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -49,17 +47,8 @@ const page = (props: Props) => {
         }
     };
 
-    /* The most important point */
-    const config: any = useMemo(
-        () => ({
-            /* Custom image uploader button configuration to accept image and convert it to base64 format */
-            uploader: {
-                insertImageAsBase64URI: true,
-                imagesExtensions: ['jpg', 'png', 'jpeg', 'gif', 'svg', 'webp'] // this line is not much important, use if you only strictly want to allow some specific image format
-            },
-        }),
-        []
-    );
+    console.log(form);
+
     return (
         <DefaultLayout>
             <div className="flex items-center justify-between">
@@ -169,7 +158,7 @@ const page = (props: Props) => {
                         type="text"
                         value={form.price}
                         marginDiown='mb-0'
-                        htmlFor="rak"
+                        htmlFor="price"
                         title="Harga Buku"
                         placeholder="Masukan Harga Buku"
                         onChange={handleChange}
