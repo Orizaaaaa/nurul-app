@@ -1,4 +1,5 @@
 'use client'
+import { createBook, postImage } from '@/api/method'
 import ButtonPrimary from '@/components/elements/buttonPrimary'
 import ButtonSecondary from '@/components/elements/buttonSecondary'
 import InputForm from '@/components/elements/input/InputForm'
@@ -7,6 +8,7 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { useDisclosure } from '@heroui/react'
 import { title } from 'process'
 import React, { useMemo } from 'react'
+import toast from 'react-hot-toast'
 import { IoCameraOutline } from 'react-icons/io5'
 
 type Props = {}
@@ -48,6 +50,57 @@ const page = (props: Props) => {
     };
 
     console.log(form);
+
+
+
+    const handleSubmit = async () => {
+        try {
+            // Tampilkan toast saat proses dimulai
+            const toastId = toast.loading('Mengunggah buku baru...');
+
+            let imageUrl = '';
+
+            // 1. Upload image ke Cloudinary
+            if (form.image) {
+                imageUrl = await postImage({ image: form.image });
+                if (!imageUrl) throw new Error('Gagal upload gambar');
+            }
+
+            // 2. Siapkan data buku
+            const newBook = {
+                title: form.title,
+                author: form.author,
+                stock: form.stock,
+                rak: form.rak,
+                price: form.price,
+                image: imageUrl,
+                createdAt: new Date(),
+            };
+
+            // 3. Simpan ke Firestore
+            const bookId = await createBook(newBook);
+            console.log('Book berhasil disimpan dengan ID:', bookId);
+
+            // 4. Reset form dan tutup modal
+            onClose();
+            setForm({
+                image: null,
+                title: '',
+                author: '',
+                stock: 0,
+                rak: '',
+                price: 0,
+            });
+
+            // Ganti toast jadi sukses
+            toast.success('Selesai menambah list buku baru', { id: toastId });
+
+        } catch (err) {
+            console.error('Gagal submit form:', err);
+            toast.error('Gagal menambah buku!');
+        }
+    };
+
 
     return (
         <DefaultLayout>
@@ -182,7 +235,7 @@ const page = (props: Props) => {
                 <div className="flex justify-end">
                     <div className="flex">
                         <ButtonSecondary className='py-2 px-3 rounded-xl mr-2' onClick={onClose} >Batal</ButtonSecondary>
-                        <ButtonPrimary className='py-2 px-3 rounded-xl' >Tambah</ButtonPrimary>
+                        <ButtonPrimary className='py-2 px-3 rounded-xl' onClick={handleSubmit} >Tambah</ButtonPrimary>
                     </div>
                 </div>
 

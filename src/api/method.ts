@@ -1,7 +1,10 @@
-import { auth, db } from "@/lib/firebase/firebaseConfig";
+import { auth, db, storage } from "@/lib/firebase/firebaseConfig";
+import axios from "axios";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_NAME
 export const registerUser = async (form: any): Promise<string> => {
     try {
         // Buat akun di Firebase Authentication
@@ -89,5 +92,24 @@ export const createFine = async (fineData: any): Promise<string> => {
     const docRef = await addDoc(collection(db, "fines"), fineData);
     return docRef.id;
 };
+
+
+export const postImage = async ({ image }: { image: any }) => {
+    const apiRequest = new FormData();
+    apiRequest.append('file', image as File);  // Menggunakan 'file' sebagai parameter
+    apiRequest.append('upload_preset', 'desa_cms');  // Ganti dengan upload preset Anda
+
+    try {
+        const response = await axios.post(
+            `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
+            apiRequest
+        );
+        console.log(response.data.secure_url);
+        return response.data.secure_url;
+
+    } catch (error) {
+        console.error('Error uploading the image', error);
+    }
+}
 
 
