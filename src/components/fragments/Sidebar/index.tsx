@@ -25,7 +25,7 @@ interface SidebarProps {
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
-
+  const userData = JSON.parse(localStorage.getItem('user') || '{}');
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
 
@@ -151,7 +151,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <div>
             <ul className="mb-6 flex flex-col gap-1.5">
               {/* <!-- Menu Item Dashboard --> */}
-              {sideBarRole('admin')}
+              {sideBarRole(userData.role)}
               {/* <!-- Menu Item Calendar -->
               <NavigationList icon={<IoCalendarOutline size={19} />} title="Calendar" pathname="/calendar" /> */}
 

@@ -85,7 +85,7 @@ const Login = () => {
             localStorage.setItem('user', JSON.stringify(userData));
 
             // Redirect ke dashboard atau halaman utama
-            router.push("/dashboard");
+            router.push("/user/dashboard");
 
         } catch (error: any) {
             setErrorMsg((prev) => ({

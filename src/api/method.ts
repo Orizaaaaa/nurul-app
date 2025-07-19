@@ -35,7 +35,7 @@ export const loginUser = async (email: string, password: string): Promise<any> =
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Ambil data user lengkap dari Firestore
+        // Ambil data lengkap user hanya dari Firestore
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
 
@@ -43,15 +43,10 @@ export const loginUser = async (email: string, password: string): Promise<any> =
             throw new Error("Data pengguna tidak ditemukan di Firestore.");
         }
 
-        const userData = docSnap.data();
-
-        return {
-            uid: user.uid,
-            email: user.email,
-            ...userData, // gabungkan semua data dari Firestore
-        };
+        // Kembalikan hanya data dari Firestore
+        return docSnap.data();
     } catch (error: any) {
-        throw new Error(error.message);
+        throw new Error(error.message || "Terjadi kesalahan saat login.");
     }
 };
 

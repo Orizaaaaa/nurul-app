@@ -9,11 +9,22 @@ const collectionName = "items";
 
 export const loginUser = async (email: string, password: string): Promise<any> => {
     try {
+        // Autentikasi menggunakan email dan password
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        return userCredential.user; // Mengembalikan user setelah berhasil login
-    } catch (error) {
-        console.error("Login gagal:", error);
-        throw new Error("Login gagal. Periksa email dan kata sandi Anda.");
+        const uid = userCredential.user.uid;
+
+        // Ambil data user hanya dari Firestore
+        const docRef = doc(db, "users", uid);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+            throw new Error("Data pengguna tidak ditemukan di Firestore.");
+        }
+
+        // Kembalikan hanya data yang ada di Firestore
+        return docSnap.data();
+    } catch (error: any) {
+        throw new Error(error.message || "Terjadi kesalahan saat login.");
     }
 };
 
