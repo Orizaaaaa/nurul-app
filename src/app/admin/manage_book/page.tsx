@@ -93,53 +93,7 @@ const page = (props: Props) => {
 
 
 
-    const handleSubmit = async () => {
-        try {
-            // Tampilkan toast saat proses dimulai
-            const toastId = toast.loading('Mengunggah buku baru...');
 
-            let imageUrl = '';
-
-            // 1. Upload image ke Cloudinary
-            if (form.image) {
-                imageUrl = await postImage({ image: form.image });
-                if (!imageUrl) throw new Error('Gagal upload gambar');
-            }
-
-            // 2. Siapkan data buku
-            const newBook = {
-                title: form.title,
-                author: form.author,
-                stock: form.stock,
-                rak: form.rak,
-                price: form.price,
-                image: imageUrl,
-                createdAt: new Date(),
-            };
-
-            // 3. Simpan ke Firestore
-            const bookId = await createBook(newBook);
-            console.log('Book berhasil disimpan dengan ID:', bookId);
-
-            // 4. Reset form dan tutup modal
-            onClose();
-            setForm({
-                image: null,
-                title: '',
-                author: '',
-                stock: 0,
-                rak: '',
-                price: 0,
-            });
-
-            // Ganti toast jadi sukses
-            toast.success('Selesai menambah list buku baru', { id: toastId });
-
-        } catch (err) {
-            console.error('Gagal submit form:', err);
-            toast.error('Gagal menambah buku!');
-        }
-    };
 
     const openModalDelete = (docId: string) => {
         onWarningOpen();
@@ -168,14 +122,80 @@ const page = (props: Props) => {
         }
     }
 
+    const handleSubmit = async () => {
+        try {
+            // Validasi input
+            if (
+                !form.title.trim() ||
+                !form.author.trim() ||
+                !form.rak.trim() ||
+                !form.image ||
+                form.stock <= 0 ||
+                form.price <= 0
+            ) {
+                toast.error('Semua data wajib diisi!');
+                return;
+            }
+
+            const toastId = toast.loading('Mengunggah buku baru...');
+
+            let imageUrl = '';
+
+            // Upload image ke Cloudinary
+            imageUrl = await postImage({ image: form.image });
+            if (!imageUrl) throw new Error('Gagal upload gambar');
+
+            const newBook = {
+                title: form.title,
+                author: form.author,
+                stock: form.stock,
+                rak: form.rak,
+                price: form.price,
+                image: imageUrl,
+                createdAt: new Date(),
+            };
+
+            const bookId = await createBook(newBook);
+            console.log('Book berhasil disimpan dengan ID:', bookId);
+
+            onClose();
+            setForm({
+                image: null,
+                title: '',
+                author: '',
+                stock: 0,
+                rak: '',
+                price: 0,
+            });
+
+            toast.success('Selesai menambah list buku baru', { id: toastId });
+
+        } catch (err) {
+            console.error('Gagal submit form:', err);
+            toast.error('Gagal menambah buku!');
+        }
+    };
+
     const handleUpdate = async () => {
         try {
+            // Validasi input
+            if (
+                !formUpdate.title.trim() ||
+                !formUpdate.author.trim() ||
+                !formUpdate.rak.trim() ||
+                !formUpdate.image ||
+                formUpdate.stock <= 0 ||
+                formUpdate.price <= 0
+            ) {
+                toast.error('Semua data wajib diisi!');
+                return;
+            }
+
             const toastId = toast.loading('Mengunggah perubahan buku...');
 
             let imageUrl = formUpdate.image;
 
-            // Cek apakah gambar merupakan file lokal (File object)
-            if (formUpdate.image && typeof formUpdate.image !== 'string') {
+            if (typeof formUpdate.image !== 'string') {
                 imageUrl = await postImage({ image: formUpdate.image });
                 if (!imageUrl) throw new Error('Gagal upload gambar');
             }
@@ -192,7 +212,6 @@ const page = (props: Props) => {
 
             await updateBook(idBook, updatedBook);
 
-            // Opsional: reset form / tutup modal / refresh data
             onUpdateClose();
             fetchBooks();
             toast.success('Buku berhasil diperbarui', { id: toastId });
@@ -202,6 +221,7 @@ const page = (props: Props) => {
             toast.error('Gagal memperbarui buku!');
         }
     };
+
 
     console.log(data);
     console.log('ini adalah data form update', formUpdate);
