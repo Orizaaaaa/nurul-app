@@ -2,6 +2,7 @@
 import { getAllBooks } from '@/api/method'
 import { mann_above } from '@/app/image'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { truncateText } from '@/utils/helper'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
@@ -123,8 +124,8 @@ const page = (props: Props) => {
                                     </div>
                                     <div className="p-2 flex flex-col flex-grow">
                                         <div className="mb-2">
-                                            <p className="text-[11px] text-gray-400">{item.author}</p>
-                                            <h1 className="text-[11px] font-medium line-clamp-2">{item.title}</h1>
+                                            <p className="text-[11px] text-gray-400">{truncateText(item.author, 17)}</p>
+                                            <h1 className="text-[11px] font-medium line-clamp-2">{truncateText(item.title, 38)}</h1>
                                         </div>
                                         <div className="mt-auto">
                                             <h1 className="text-[11px]">Stok {item.stock}</h1>
