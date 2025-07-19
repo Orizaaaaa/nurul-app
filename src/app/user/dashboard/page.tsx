@@ -1,16 +1,33 @@
 'use client'
+import { getAllBooks } from '@/api/method'
 import { mann_above } from '@/app/image'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { IoPeople } from 'react-icons/io5'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 type Props = {}
 
 const page = (props: Props) => {
+    const [data, setData]: any = React.useState([])
     const router = useRouter();
+    const fetchBooks = async () => {
+        try {
+            const books = await getAllBooks();
+            setData(books);
+        } catch (err) {
+            console.error('Gagal mengambil data buku:', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchBooks();
+    }, []);
+
+    console.log(data);
+
     return (
         <DefaultLayout>
             <div className="relative bg-primaryGreen w-full p-3 rounded-xl overflow-hidden">
@@ -94,29 +111,32 @@ const page = (props: Props) => {
                         pagination={{ clickable: true }}
                         navigation
                     >
-                        {[...Array(8)].map((_, i) => (
-                            <SwiperSlide key={i}>
-                                <div className="shadow-xl rounded-lg">
+                        {data.map((item: any) => (
+                            <SwiperSlide key={item.id}>
+                                <div className="shadow-xl rounded-lg flex flex-col h-[270px] my-3">
                                     <div className="flex justify-center items-center">
                                         <img
-                                            className="rounded-t-lg h-40 w-full"
-                                            src="https://image.gramedia.net/rs:fit:0:0/plain/https://cdn.gramedia.com/uploads/items/9786237046066_JOKOWI_Kisah-Perjuangan-dan-Inspirasi.jpg"
-                                            alt=""
+                                            className="rounded-t-lg h-40 w-full object-cover"
+                                            src={item.image}
+                                            alt={item.title}
                                         />
                                     </div>
-                                    <div className="p-2">
-                                        <p className="text-sm mt-2 text-gray-400">Gabriel Yonatan</p>
-                                        <h1 className="text-sm font-semibold">
-                                            Seri Mengelola Negara Ketika Sarah Marah
-                                        </h1>
-                                        <h1 className="text-sm">89 Stock</h1>
-                                        <h1 className="text-sm text-gray-400">Rak nomor 28</h1>
+                                    <div className="p-2 flex flex-col flex-grow">
+                                        <div className="mb-2">
+                                            <p className="text-[11px] text-gray-400">{item.author}</p>
+                                            <h1 className="text-[11px] font-medium line-clamp-2">{item.title}</h1>
+                                        </div>
+                                        <div className="mt-auto">
+                                            <h1 className="text-[11px]">Stok {item.stock}</h1>
+                                            <h1 className="text-[11px] text-gray-400">Rak nomor {item.rak}</h1>
+                                        </div>
                                     </div>
                                 </div>
                             </SwiperSlide>
                         ))}
                     </Swiper>
                 </div>
+
 
             </div>
         </DefaultLayout>
