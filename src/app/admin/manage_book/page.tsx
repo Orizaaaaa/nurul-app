@@ -1,5 +1,5 @@
 'use client'
-import { createBook, deleteBook, getAllBooks, postImage } from '@/api/method'
+import { createBook, deleteBook, getAllBooks, postImage, updateBook } from '@/api/method'
 import ButtonPrimary from '@/components/elements/buttonPrimary'
 import ButtonSecondary from '@/components/elements/buttonSecondary'
 import InputForm from '@/components/elements/input/InputForm'
@@ -58,6 +58,11 @@ const page = (props: Props) => {
         const { name, value } = e.target;
         setForm({ ...form, [name]: value });
     };
+    const handleChangeUpdate = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormUpdate({ ...formUpdate, [name]: value });
+    };
+
 
     //input gambar
     const handleFileManager = (fileName: string) => {
@@ -144,6 +149,7 @@ const page = (props: Props) => {
     const onOpenModalUpdate = (item: any) => {
         onUpdateOpen();
         setFormUpdate(item);
+        setIdBook(item.id);
     }
 
     const handleDelete = async () => {
@@ -153,6 +159,7 @@ const page = (props: Props) => {
             // Panggil fungsi deleteBook
             await deleteBook(idBook);
             fetchBooks();
+            onWarningClose();
             toast.success('Buku berhasil dihapus', { id: toastId });
 
         } catch (err) {
@@ -160,6 +167,42 @@ const page = (props: Props) => {
             toast.error('Gagal menghapus buku!');
         }
     }
+
+    const handleUpdate = async () => {
+        try {
+            const toastId = toast.loading('Mengunggah perubahan buku...');
+
+            let imageUrl = formUpdate.image;
+
+            // Cek apakah gambar merupakan file lokal (File object)
+            if (formUpdate.image && typeof formUpdate.image !== 'string') {
+                imageUrl = await postImage({ image: formUpdate.image });
+                if (!imageUrl) throw new Error('Gagal upload gambar');
+            }
+
+            const updatedBook = {
+                title: formUpdate.title,
+                author: formUpdate.author,
+                stock: formUpdate.stock,
+                rak: formUpdate.rak,
+                price: formUpdate.price,
+                image: imageUrl,
+                updatedAt: new Date(),
+            };
+
+            await updateBook(idBook, updatedBook);
+
+            // Opsional: reset form / tutup modal / refresh data
+            onUpdateClose();
+            fetchBooks();
+            toast.success('Buku berhasil diperbarui', { id: toastId });
+
+        } catch (err) {
+            console.error('Gagal update buku:', err);
+            toast.error('Gagal memperbarui buku!');
+        }
+    };
+
     console.log(data);
     console.log('ini adalah data form update', formUpdate);
 
@@ -173,24 +216,37 @@ const page = (props: Props) => {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
                 {data.map((item: any) => (
-                    <div key={item.id} className='shadow-xl rounded-lg' >
-                        <div className=" flex justify-center items-center">
-                            <img className=' rounded-t-lg h-40 w-full' src={item.image} alt="" />
+                    <div key={item.id} className="shadow-xl rounded-lg flex flex-col h-full">
+                        <div className="flex justify-center items-center">
+                            <img className="rounded-t-lg h-40 w-full object-cover" src={item.image} alt="" />
                         </div>
-                        <div className='p-2'   >
-                            <p className='text-sm mt-2 text-gray-400' >{item.author}</p>
-                            <h1 className='text-sm font-semibold'>Seri Mengelola Negara Ketika Sarah Marah</h1>
-                            <h1 className='text-sm ' >{item.stock}</h1>
-                            <h1 className='text-sm text-gray-400' >Rak nomor {item.rak}</h1>
-                            <div className="flex justify-end gap-2 mt-1  ">
-                                <RiEdit2Fill onClick={() => onOpenModalUpdate(item)} className='cursor-pointer' size={20} color='#3E5F44' />
-                                <IoMdTrash onClick={() => openModalDelete(item.id)} className='cursor-pointer' size={20} color='red' />
+                        <div className="p-2 flex flex-col justify-between flex-grow">
+                            <div>
+                                <p className="text-sm mt-2 text-gray-400">{item.author}</p>
+                                <h1 className="text-sm font-medium">{item.title}</h1>
+                                <h1 className="text-sm">Stok {item.stock}</h1>
+                                <h1 className="text-sm text-gray-400">Rak nomor {item.rak}</h1>
+                            </div>
+
+                            <div className="flex justify-end gap-2 mt-4">
+                                <RiEdit2Fill
+                                    onClick={() => onOpenModalUpdate(item)}
+                                    className="cursor-pointer"
+                                    size={20}
+                                    color="#3E5F44"
+                                />
+                                <IoMdTrash
+                                    onClick={() => openModalDelete(item.id)}
+                                    className="cursor-pointer"
+                                    size={20}
+                                    color="red"
+                                />
                             </div>
                         </div>
-
                     </div>
                 ))}
             </div>
+
 
             <ModalDefault isOpen={isUpdateOpen} onClose={onUpdateClose}>
 
@@ -234,7 +290,7 @@ const page = (props: Props) => {
                     htmlFor="title"
                     title="Judul Buku"
                     placeholder="Masukan Judul Buku"
-                    onChange={handleChange}
+                    onChange={handleChangeUpdate}
                 />
 
                 <InputForm
@@ -245,7 +301,7 @@ const page = (props: Props) => {
                     htmlFor="author"
                     title="Penulis Buku"
                     placeholder="Masukan Penulis Buku"
-                    onChange={handleChange}
+                    onChange={handleChangeUpdate}
                 />
 
                 <div className="flex gap-5">
@@ -257,7 +313,7 @@ const page = (props: Props) => {
                         htmlFor="stock"
                         title="Stok Buku"
                         placeholder="Masukan Jumlah Stok"
-                        onChange={handleChange}
+                        onChange={handleChangeUpdate}
                     />
 
                     <InputForm
@@ -268,7 +324,7 @@ const page = (props: Props) => {
                         htmlFor="price"
                         title="Harga Buku"
                         placeholder="Masukan Harga Buku"
-                        onChange={handleChange}
+                        onChange={handleChangeUpdate}
                     />
 
                 </div>
@@ -281,15 +337,15 @@ const page = (props: Props) => {
                     htmlFor="rak"
                     title="Lokasi Rak"
                     placeholder="Masukan Lokasi Rak"
-                    onChange={handleChange}
+                    onChange={handleChangeUpdate}
                 />
 
 
 
                 <div className="flex justify-end">
                     <div className="flex">
-                        <ButtonSecondary className='py-2 px-3 rounded-xl mr-2'  >Batal</ButtonSecondary>
-                        <ButtonPrimary className='py-2 px-3 rounded-xl' >Tambah</ButtonPrimary>
+                        <ButtonSecondary className='py-2 px-3 rounded-xl mr-2' onClick={onUpdateClose}  >Batal</ButtonSecondary>
+                        <ButtonPrimary className='py-2 px-3 rounded-xl' onClick={handleUpdate} >Edit Buku</ButtonPrimary>
                     </div>
                 </div>
 
