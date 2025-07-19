@@ -36,6 +36,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     storedSidebarExpanded === null ? false : storedSidebarExpanded === "true",
   );
 
+  useEffect(() => {
+    setUserData(JSON.parse(localStorage.getItem('user') || '{}'));
+  }, []);
+
   // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
@@ -54,7 +58,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   // close if the esc key is pressed
   useEffect(() => {
-    setUserData(JSON.parse(localStorage.getItem('user') || '{}'));
     const keyHandler = ({ key }: KeyboardEvent) => {
       if (!sidebarOpen || key !== "Escape") return;
       setSidebarOpen(false);
@@ -77,7 +80,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const handleLogout = () => {
     localStorage.clear();
     document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-    route.push("/")
+    route.push("/auth/login")
   }
 
   const sideBarRole = (value: any) => {

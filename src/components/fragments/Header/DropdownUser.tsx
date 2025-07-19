@@ -53,7 +53,7 @@ const DropdownUser = () => {
             {userData.name ? capitalizeWords(userData.name) : "User"}
           </span>
           <span className="block text-xs text-primaryGreen">
-            {role ? capitalizeWords(role) : "Pengguna"}
+            {userData.role ? capitalizeWords(userData.role) : "Pengguna"}
           </span>
         </span>
 

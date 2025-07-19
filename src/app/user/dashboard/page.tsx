@@ -2,6 +2,7 @@
 import { mann_above } from '@/app/image'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 import { IoPeople } from 'react-icons/io5'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -9,6 +10,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 type Props = {}
 
 const page = (props: Props) => {
+    const router = useRouter();
     return (
         <DefaultLayout>
             <div className="relative bg-primaryGreen w-full p-3 rounded-xl overflow-hidden">
@@ -66,7 +68,7 @@ const page = (props: Props) => {
             <div className='grid-cols-6 mb-8' >
                 <div className="flex justify-between items-center">
                     <h1 className='text-xl font-bold text-primaryGreen italic mb-2' >Buku Terbaru Saat Ini</h1>
-                    <p className='text-secondaryGreen' >Lihat Semua</p>
+                    <p className='text-secondaryGreen' onClick={() => router.push('/user/book_list')} >Lihat Semua</p>
                 </div>
 
                 <div className="mt-4">

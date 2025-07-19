@@ -86,14 +86,14 @@ function page({ }: Props) {
                         <h1 className='text-white' >Jumlah Peminjam saat ini</h1>
 
                     </div>
-                    <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
+                    <h1 className='text-white text-xl font-bold mt-3' >4</h1>
                 </div>
                 <div className='bg-primaryGreen rounded-xl p-2' >
                     <div className="flex gap-3 items-center">
                         <ImBook size={20} color='white' />
                         <h1 className='text-white' >Jumlah Buku saat ini</h1>
                     </div>
-                    <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
+                    <h1 className='text-white text-xl font-bold mt-3' >4</h1>
                 </div>
 
                 <div className='bg-primaryGreen rounded-xl p-2' >
@@ -101,7 +101,7 @@ function page({ }: Props) {
                         <FaMoneyBillTransfer size={22} color='white' />
                         <h1 className='text-white' >Total Semua Denda</h1>
                     </div>
-                    <h1 className='text-white text-3xl font-bold mt-3' >Rp.1000.000</h1>
+                    <h1 className='text-white text-xl font-bold mt-3' >Rp.1000.000</h1>
                 </div>
             </div>
 
