@@ -1,13 +1,15 @@
 'use client';
 
+import ModalDefault from '@/components/fragments/modal/modal';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { db } from '@/lib/firebase/firebaseConfig';
 import { formatDate, formatDateStr } from '@/utils/helper';
 import {
     getKeyValue, Table, TableBody, TableCell, TableColumn, TableHeader,
-    TableRow, Input, Button, Pagination
+    TableRow, Input, Button, Pagination,
+    useDisclosure
 } from '@heroui/react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 
 import React, { useEffect, useState } from 'react';
 
@@ -21,6 +23,7 @@ type Borrowing = {
 };
 
 const page = () => {
+    const { onOpen, onClose, isOpen } = useDisclosure();
     const [borrowings, setBorrowings] = useState<Borrowing[]>([]);
     const [filteredBorrowings, setFilteredBorrowings] = useState<Borrowing[]>([]);
     const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -98,6 +101,73 @@ const page = () => {
         return value?.toString?.() ?? '-';
     }
 
+    // untuk update status peminjaman otomatis
+    const updateBorrowingStatuses = async (data: Borrowing[]) => {
+        const updated = await Promise.all(
+            data.map(async (item: any) => {
+                if (item.status !== "dikembalikan" && item.tanggal_kembali) {
+                    const tanggalPinjam = new Date(item.tanggal_pinjam.seconds * 1000);
+                    const tanggalKembali = new Date(item.tanggal_kembali.seconds * 1000);
+
+                    const totalDays = Math.floor(
+                        (tanggalKembali.getTime() - tanggalPinjam.getTime()) / (1000 * 60 * 60 * 24)
+                    );
+
+                    const keterlambatan = totalDays - 7;
+                    let newStatus = item.status;
+                    let newDenda = item.denda || 0;
+
+                    if (keterlambatan > 0 && keterlambatan <= 10) {
+                        newStatus = "terlambat";
+                        newDenda = keterlambatan * 1000;
+                    } else if (keterlambatan > 10) {
+                        newStatus = "hilang";
+                        newDenda = Number(item.book_price); // ganti rugi harga buku
+                    }
+
+                    const shouldUpdate =
+                        newStatus !== item.status || newDenda !== item.denda;
+
+                    if (shouldUpdate) {
+                        const docRef = doc(db, "borrowings", item.key);
+                        await updateDoc(docRef, {
+                            status: newStatus,
+                            denda: newDenda,
+                        });
+
+                        return { ...item, status: newStatus, denda: newDenda };
+                    }
+                }
+
+                return item;
+            })
+        );
+
+        return updated;
+    };
+
+
+
+
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const querySnapshot = await getDocs(collection(db, "borrowings"));
+            const data = querySnapshot.docs.map((doc) => ({
+                key: doc.id,
+                ...doc.data(),
+            })) as Borrowing[];
+
+            const updatedData = await updateBorrowingStatuses(data);
+            setBorrowings(updatedData);
+            setFilteredBorrowings(updatedData);
+        };
+
+        fetchData();
+    }, []);
+
+
     return (
         <DefaultLayout>
             <div className="mt-5 mb-4">
@@ -143,7 +213,7 @@ const page = () => {
                                     columnKey === 'actions' ? (
                                         <TableCell>
                                             <div className="flex gap-2">
-                                                <Button color="primary" size="sm">Edit</Button>
+                                                <Button color="primary" size="sm" onClick={onOpen}>Edit</Button>
                                                 <Button color="danger" size="sm">Hapus</Button>
                                             </div>
                                         </TableCell>
@@ -173,6 +243,10 @@ const page = () => {
                     </div>
                 )}
             </div>
+
+            <ModalDefault isOpen={isOpen} onClose={onClose} >
+                <h1>Edit Peminjaman</h1>
+            </ModalDefault>
         </DefaultLayout>
     );
 };
