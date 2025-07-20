@@ -50,12 +50,12 @@ const page = (props: Props) => {
                                 </div>
                                 <div className='p-2 flex flex-col flex-grow'>
                                     <div className="mb-2">
-                                        <p className='text-sm text-gray-400 line-clamp-1'>{item.author}</p>
-                                        <h1 className='text-sm font-semibold line-clamp-2'>{truncateText(item.title, 38)}</h1>
+                                        <p className='text-[11px] text-gray-400 line-clamp-1'>{item.author}</p>
+                                        <h1 className='text-[11px] font-semibold line-clamp-2'>{truncateText(item.title, 38)}</h1>
                                     </div>
                                     <div className="mt-auto">
-                                        <h1 className='text-sm'>Stok {item.stock}</h1>
-                                        <h1 className='text-sm text-gray-400'>Rak nomor {item.rack}</h1>
+                                        <h1 className='text-[11px]'>Stok Tersedia{item.stock_available}</h1>
+                                        <h1 className='text-[11px] text-gray-400'>Rak nomor {item.rack}</h1>
                                     </div>
                                 </div>
                             </div>

@@ -150,6 +150,7 @@ const page = (props: Props) => {
                 title: form.title,
                 author: form.author,
                 stock: form.stock,
+                stock_available: form.stock, // initial stock available = stock penuh
                 rak: form.rak,
                 price: form.price,
                 image: imageUrl,
@@ -158,7 +159,6 @@ const page = (props: Props) => {
 
             const bookId = await createBook(newBook);
             console.log('Book berhasil disimpan dengan ID:', bookId);
-
             onClose();
             setForm({
                 image: null,
@@ -168,7 +168,7 @@ const page = (props: Props) => {
                 rak: '',
                 price: 0,
             });
-
+            fetchBooks();
             toast.success('Selesai menambah list buku baru', { id: toastId });
 
         } catch (err) {
@@ -243,13 +243,14 @@ const page = (props: Props) => {
                         </div>
                         <div className="p-2 flex flex-col justify-between flex-grow">
                             <div>
-                                <p className="text-sm mt-2 text-gray-400">{item.author}</p>
-                                <h1 className="text-sm font-medium">{item.title}</h1>
-                                <h1 className="text-sm">Total Stock {item.stock}</h1>
-                                <h1 className="text-sm text-gray-400">Rak nomor {item.rak}</h1>
+                                <p className="text-[11px] mt-2 text-gray-400">{item.author}</p>
+                                <h1 className="text-[11px] font-medium">{item.title}</h1>
+                                <h1 className="text-[11px]">Total Stock {item.stock}</h1>
+                                <h1 className="text-[11px]">Stock Tersedia {item.stock_available || 'kosong'}</h1>
+                                <h1 className="text-[11px] text-gray-400">Rak nomor {item.rak}</h1>
                             </div>
 
-                            <div className="flex justify-end gap-2 mt-4">
+                            <div className="flex justify-end gap-2 ">
                                 <RiEdit2Fill
                                     onClick={() => onOpenModalUpdate(item)}
                                     className="cursor-pointer"

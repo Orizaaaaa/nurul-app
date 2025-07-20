@@ -1,17 +1,23 @@
 'use client'
 import { getAllBooks } from '@/api/method'
 import { mann_above } from '@/app/image'
+import ModalDefault from '@/components/fragments/modal/modal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { db } from '@/lib/firebase/firebaseConfig'
 import { truncateText } from '@/utils/helper'
+import { useDisclosure } from '@heroui/react'
+import { addDoc, collection, doc, getDoc, Timestamp, updateDoc } from 'firebase/firestore'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { IoPeople } from 'react-icons/io5'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 type Props = {}
 
 const page = (props: Props) => {
+    const { onOpen, onClose, isOpen } = useDisclosure();
     const [data, setData]: any = React.useState([])
     const router = useRouter();
     const fetchBooks = async () => {
@@ -27,7 +33,90 @@ const page = (props: Props) => {
         fetchBooks();
     }, []);
 
-    console.log(data);
+    const [form, setForm] = React.useState({
+        user_uid: '',                // ID user yang meminjam
+        user_name: '',              // nama user
+        book_id: '',                // ID buku
+        book_title: '',             // Judul buku
+        book_price: 0,              // Harga buku (untuk kasus hilang)
+        jumlah: 1,                  // Berapa banyak buku dipinjam
+        tanggal_pinjam: new Date(),// Tanggal pinjam
+        tanggal_kembali: null,     // Tanggal pengembalian (diisi nanti)
+        status: 'belum diambil',    // default status
+    });
+
+
+    const handlePinjam = async () => {
+        try {
+            const bookRef = doc(db, 'books', form.book_id);
+            const bookSnap = await getDoc(bookRef);
+
+            if (!bookSnap.exists()) {
+                toast.error('Buku tidak ditemukan');
+                return;
+            }
+
+            const bookData = bookSnap.data();
+            const stockAvailable = bookData.stock_available;
+
+            if (form.jumlah > stockAvailable) {
+                toast.error('Stok tidak mencukupi');
+                return;
+            }
+
+            // Hitung tanggal kembali: 7 hari dari hari ini
+            const tanggalPinjam = new Date();
+            const tanggalKembali = new Date();
+            tanggalKembali.setDate(tanggalPinjam.getDate() + 7);
+
+            // KONNNN
+            // Simpan data peminjaman ke Firestore
+            // ini tuh harus nya nanti di halaman admin pas buku nya di pinjam, 
+            // dan tanggal kembali nya di kosongkan dulu di user, dan adakan di admin ketika mengubah status
+
+            const newBorrowing = {
+                user_id: form.user_uid,
+                user_name: form.user_name,
+                book_id: form.book_id,
+                book_title: form.book_title,
+                book_price: form.book_price,
+                jumlah: form.jumlah,
+                tanggal_pinjam: Timestamp.fromDate(tanggalPinjam),
+                tanggal_kembali: Timestamp.fromDate(tanggalKembali),
+                status: 'dipinjam',
+                denda: 0,
+            };
+
+            await addDoc(collection(db, 'borrowings'), newBorrowing);
+
+            // Kurangi stok buku yang tersedia
+            await updateDoc(bookRef, {
+                stock_available: stockAvailable - form.jumlah,
+            });
+
+            toast.success('Peminjaman berhasil disimpan!');
+        } catch (error) {
+            console.error('Gagal memproses peminjaman:', error);
+            toast.error('Gagal meminjam buku');
+        }
+    };
+
+    const handleModalBorrow = (item: any) => {
+        const storedUser: any = localStorage.getItem('user');
+        const parsedUser = JSON.parse(storedUser);
+        setForm((prevForm) => ({
+            ...prevForm,
+            user_uid: parsedUser.uid || '',
+            user_name: parsedUser.name || '',
+            book_id: item.id,                // ID buku
+            book_title: item.title,             // Judul buku
+            book_price: item.price,
+        }));
+        onOpen()
+    }
+
+
+    console.log(form);
 
     return (
         <DefaultLayout>
@@ -122,13 +211,14 @@ const page = (props: Props) => {
                                             alt={item.title}
                                         />
                                     </div>
-                                    <div className="p-2 flex flex-col flex-grow">
+                                    <div className="p-2 flex flex-col flex-grow cursor-pointer "
+                                        onClick={() => handleModalBorrow(item)}>
                                         <div className="mb-2">
                                             <p className="text-[11px] text-gray-400">{truncateText(item.author, 17)}</p>
                                             <h1 className="text-[11px] font-medium line-clamp-2">{truncateText(item.title, 38)}</h1>
                                         </div>
                                         <div className="mt-auto">
-                                            <h1 className="text-[11px]">Stok Tersedia {item.stock}</h1>
+                                            <h1 className="text-[11px]">Stok Tersedia {item.stock_available}</h1>
                                             <h1 className="text-[11px] text-gray-400">Rak nomor {item.rak}</h1>
                                         </div>
                                     </div>
@@ -138,7 +228,15 @@ const page = (props: Props) => {
                     </Swiper>
                 </div>
 
-
+                <ModalDefault isOpen={isOpen} onClose={onClose}>
+                    <h1 className='text-xl font-bold text-primaryGreen italic mb-2' >Pinjam Buku</h1>
+                    <h1>Apakah anda yakin akan meminjam buku ini ?</h1>
+                    <div className="flex justify-end items-center gap-3">
+                        <button className='bg-primaryGreen text-white py-2 px-4 rounded-lg cursor-pointer'
+                            onClick={handlePinjam} >Ya</button>
+                        <button className='bg-secondaryGreen text-white py-2 px-4 rounded-lg cursor-pointer' onClick={onClose} >Tidak</button>
+                    </div>
+                </ModalDefault>
             </div>
         </DefaultLayout>
     )
