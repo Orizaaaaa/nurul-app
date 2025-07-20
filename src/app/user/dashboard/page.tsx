@@ -128,7 +128,7 @@ const page = (props: Props) => {
                                             <h1 className="text-[11px] font-medium line-clamp-2">{truncateText(item.title, 38)}</h1>
                                         </div>
                                         <div className="mt-auto">
-                                            <h1 className="text-[11px]">Stok {item.stock}</h1>
+                                            <h1 className="text-[11px]">Stok Tersedia {item.stock}</h1>
                                             <h1 className="text-[11px] text-gray-400">Rak nomor {item.rak}</h1>
                                         </div>
                                     </div>

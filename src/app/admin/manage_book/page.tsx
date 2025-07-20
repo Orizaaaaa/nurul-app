@@ -37,6 +37,7 @@ const page = (props: Props) => {
         title: '',
         author: '',
         stock: 0,
+        stock_available: 0,
         rak: '',
         price: 0,
     })
@@ -244,7 +245,7 @@ const page = (props: Props) => {
                             <div>
                                 <p className="text-sm mt-2 text-gray-400">{item.author}</p>
                                 <h1 className="text-sm font-medium">{item.title}</h1>
-                                <h1 className="text-sm">Stok {item.stock}</h1>
+                                <h1 className="text-sm">Total Stock {item.stock}</h1>
                                 <h1 className="text-sm text-gray-400">Rak nomor {item.rak}</h1>
                             </div>
 
