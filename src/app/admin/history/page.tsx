@@ -103,26 +103,29 @@ const page = () => {
 
     // untuk update status peminjaman otomatis
     const updateBorrowingStatuses = async (data: Borrowing[]) => {
+        const now = new Date();
+
         const updated = await Promise.all(
             data.map(async (item: any) => {
-                if (item.status !== "dikembalikan" && item.tanggal_kembali) {
+                if (item.status !== "dikembalikan") {
                     const tanggalPinjam = new Date(item.tanggal_pinjam.seconds * 1000);
-                    const tanggalKembali = new Date(item.tanggal_kembali.seconds * 1000);
 
-                    const totalDays = Math.floor(
-                        (tanggalKembali.getTime() - tanggalPinjam.getTime()) / (1000 * 60 * 60 * 24)
-                    );
+                    // Tanggal batas pengembalian adalah 7 hari setelah tanggal pinjam
+                    const batasKembali = new Date(tanggalPinjam);
+                    batasKembali.setDate(batasKembali.getDate() + 7);
 
-                    const keterlambatan = totalDays - 7;
+                    const diffMs = now.getTime() - batasKembali.getTime();
+                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
                     let newStatus = item.status;
                     let newDenda = item.denda || 0;
 
-                    if (keterlambatan > 0 && keterlambatan <= 10) {
+                    if (diffDays > 0 && diffDays <= 10) {
                         newStatus = "terlambat";
-                        newDenda = keterlambatan * 1000;
-                    } else if (keterlambatan > 10) {
+                        newDenda = diffDays * 1000;
+                    } else if (diffDays > 10) {
                         newStatus = "hilang";
-                        newDenda = Number(item.book_price); // ganti rugi harga buku
+                        newDenda = Number(item.book_price); // user ganti rugi penuh
                     }
 
                     const shouldUpdate =
@@ -145,6 +148,7 @@ const page = () => {
 
         return updated;
     };
+
 
 
 
