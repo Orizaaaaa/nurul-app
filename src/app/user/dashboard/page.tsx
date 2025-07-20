@@ -6,7 +6,7 @@ import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { db } from '@/lib/firebase/firebaseConfig'
 import { truncateText } from '@/utils/helper'
 import { useDisclosure } from '@heroui/react'
-import { addDoc, collection, doc, getDoc, Timestamp, updateDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, getDoc, getDocs, query, Timestamp, updateDoc, where } from 'firebase/firestore'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -64,15 +64,23 @@ const page = (props: Props) => {
                 return;
             }
 
-            // Hitung tanggal kembali: 7 hari dari hari ini
-            const tanggalPinjam = new Date();
-            const tanggalKembali = new Date();
-            tanggalKembali.setDate(tanggalPinjam.getDate() + 7);
+            // ❗️Cek apakah user sudah meminjam buku yang sama
+            const q = query(
+                collection(db, 'borrowings'),
+                where('user_id', '==', form.user_uid),
+                where('book_id', '==', form.book_id),
+                where('status', 'in', ['belum diambil', 'dipinjam'])
+            );
 
-            // KONNNN
-            // Simpan data peminjaman ke Firestore
-            // ini tuh harus nya nanti di halaman admin pas buku nya di pinjam, 
-            // dan tanggal kembali nya di kosongkan dulu di user, dan adakan di admin ketika mengubah status
+            const snapshot = await getDocs(q);
+
+            if (!snapshot.empty) {
+                toast.error('Anda tidak bisa meminjam 2 buku yang sama sebelum dikembalikan!');
+                return;
+            }
+
+            // Hitung tanggal kembali (untuk admin saja, jadi user = null)
+            const tanggalPinjam = new Date();
 
             const newBorrowing = {
                 user_id: form.user_uid,
@@ -82,19 +90,20 @@ const page = (props: Props) => {
                 book_price: form.book_price,
                 jumlah: form.jumlah,
                 tanggal_pinjam: Timestamp.fromDate(tanggalPinjam),
-                tanggal_kembali: Timestamp.fromDate(tanggalKembali),
-                status: 'dipinjam',
+                tanggal_kembali: null, // biarkan admin yang isi saat dikembalikan
+                status: 'belum diambil',
                 denda: 0,
             };
 
             await addDoc(collection(db, 'borrowings'), newBorrowing);
 
-            // Kurangi stok buku yang tersedia
+            // Kurangi stok buku
             await updateDoc(bookRef, {
                 stock_available: stockAvailable - form.jumlah,
             });
 
-            toast.success('Peminjaman berhasil disimpan!');
+            toast.success('Berhasil, anda tinggal datang dan konfirmasi ke admin perpus');
+            onClose();
         } catch (error) {
             console.error('Gagal memproses peminjaman:', error);
             toast.error('Gagal meminjam buku');
