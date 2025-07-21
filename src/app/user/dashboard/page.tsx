@@ -176,7 +176,7 @@ const page = (props: Props) => {
                         <IoPeople size={20} color='white' />
                         <h1 className='text-white' >Total Semua Denda</h1>
                     </div>
-                    <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
+                    <h1 className='text-white text-3xl font-bold mt-3' >RP.1000.000</h1>
                 </div>
             </div>
 
