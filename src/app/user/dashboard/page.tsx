@@ -157,7 +157,7 @@ const page = (props: Props) => {
                 <div className='bg-primaryGreen rounded-xl p-2' >
                     <div className="flex gap-3 items-center">
                         <IoPeople size={20} color='white' />
-                        <h1 className='text-white' >Jumlah Peminjam saat ini</h1>
+                        <h1 className='text-white' >Jumlah Buku Yang Di Pinjam </h1>
 
                     </div>
                     <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
