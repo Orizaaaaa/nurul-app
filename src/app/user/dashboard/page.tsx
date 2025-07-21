@@ -4,7 +4,7 @@ import { mann_above } from '@/app/image'
 import ModalDefault from '@/components/fragments/modal/modal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
 import { db } from '@/lib/firebase/firebaseConfig'
-import { truncateText } from '@/utils/helper'
+import { formatRupiah, truncateText } from '@/utils/helper'
 import { useDisclosure } from '@heroui/react'
 import { addDoc, collection, doc, getDoc, getDocs, query, Timestamp, updateDoc, where } from 'firebase/firestore'
 import Image from 'next/image'
@@ -18,6 +18,9 @@ type Props = {}
 
 const page = (props: Props) => {
     const { onOpen, onClose, isOpen } = useDisclosure();
+    const [jumlahBukuDipinjam, setJumlahBukuDipinjam] = useState(0);
+    const [jumlahSemuaBuku, setJumlahSemuaBuku] = useState(0);
+    const [totalDendaUser, setTotalDendaUser] = useState(0);
     const [data, setData]: any = React.useState([])
     const router = useRouter();
     const fetchBooks = async () => {
@@ -31,6 +34,48 @@ const page = (props: Props) => {
 
     useEffect(() => {
         fetchBooks();
+    }, []);
+
+
+    useEffect(() => {
+        const fetchUserStats = async () => {
+            try {
+                const storedUser: any = localStorage.getItem('user');
+                const parsedUser = JSON.parse(storedUser);
+                const userId = parsedUser.uid;
+
+                // Ambil semua data buku
+                const booksSnapshot = await getDocs(collection(db, 'books'));
+                setJumlahSemuaBuku(booksSnapshot.size);
+
+                // Ambil semua peminjaman user
+                const borrowingsQuery = query(
+                    collection(db, 'borrowings'),
+                    where('user_id', '==', userId)
+                );
+                const borrowingsSnapshot = await getDocs(borrowingsQuery);
+
+                let totalDenda = 0;
+                let totalJumlahDipinjam = 0;
+
+                borrowingsSnapshot.forEach((doc) => {
+                    const data = doc.data();
+
+                    if (['dipinjam', 'belum diambil'].includes(data.status)) {
+                        totalJumlahDipinjam += data.jumlah || 0;
+                    }
+
+                    totalDenda += data.denda || 0;
+                });
+
+                setJumlahBukuDipinjam(totalJumlahDipinjam);
+                setTotalDendaUser(totalDenda);
+            } catch (error) {
+                console.error('Gagal mengambil data statistik user:', error);
+            }
+        };
+
+        fetchUserStats();
     }, []);
 
     const [form, setForm] = React.useState({
@@ -160,7 +205,7 @@ const page = (props: Props) => {
                         <h1 className='text-white' >Jumlah Buku Yang Di Pinjam </h1>
 
                     </div>
-                    <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
+                    <h1 className='text-white text-3xl font-bold mt-3' >{jumlahBukuDipinjam}</h1>
                 </div>
                 <div className='bg-primaryGreen rounded-xl p-2' >
                     <div className="flex gap-3 items-center">
@@ -168,7 +213,7 @@ const page = (props: Props) => {
                         <h1 className='text-white' >Jumlah Buku saat ini</h1>
 
                     </div>
-                    <h1 className='text-white text-3xl font-bold mt-3' >4</h1>
+                    <h1 className='text-white text-3xl font-bold mt-3' >{jumlahSemuaBuku}</h1>
                 </div>
 
                 <div className='bg-primaryGreen rounded-xl p-2' >
@@ -176,14 +221,14 @@ const page = (props: Props) => {
                         <IoPeople size={20} color='white' />
                         <h1 className='text-white' >Total Semua Denda</h1>
                     </div>
-                    <h1 className='text-white text-3xl font-bold mt-3' >RP.1000.000</h1>
+                    <h1 className='text-white text-3xl font-bold mt-3' >{formatRupiah(totalDendaUser)}</h1>
                 </div>
             </div>
 
             <div className='grid-cols-6 mb-8' >
                 <div className="flex justify-between items-center">
                     <h1 className='text-xl font-bold text-primaryGreen italic mb-2' >Buku Terbaru Saat Ini</h1>
-                    <p className='text-secondaryGreen' onClick={() => router.push('/user/book_list')} >Lihat Semua</p>
+                    <p className='text-secondaryGreen cursor-pointer' onClick={() => router.push('/user/book_list')} >Lihat Semua</p>
                 </div>
 
                 <div className="mt-4">
