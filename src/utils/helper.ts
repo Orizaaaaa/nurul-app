@@ -157,11 +157,11 @@ export const columns = [
         label: "STATUS PEMINJAMAN",
     },
     {
-        key: "tanggalPinjam",
+        key: "tanggal_pinjam",
         label: "TANGGAL DIPINJAM",
     },
     {
-        key: "tanggalKembali",
+        key: "tanggal_kembali",
         label: "TANGGAL DIKEMBALIKAN",
     },
     {
@@ -170,6 +170,18 @@ export const columns = [
     },
 ];
 
+
+export function formatDateFirebase(value: any): string {
+    if (value && typeof value === 'object' && value.seconds) {
+        const date = new Date(value.seconds * 1000);
+        return date.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+        });
+    }
+    return value?.toString?.() ?? '-';
+}
 
 export const uploadImage = (file: File) => {
     return new Promise<string>((resolve, reject) => {
