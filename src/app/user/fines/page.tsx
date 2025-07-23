@@ -2,7 +2,7 @@
 
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { db } from '@/lib/firebase/firebaseConfig';
-import { columns, formatDate, formatRupiah } from '@/utils/helper';
+import { columns, formatDateFirebase, formatRupiah } from '@/utils/helper';
 import {
     getKeyValue,
     Table,
@@ -20,8 +20,8 @@ type Row = {
     key: string;
     name: string;
     status: string;
-    tanggalPinjam: string;
-    tanggalKembali: string;
+    tanggal_pinjam: string;
+    tanggal_kembali: string;
     denda: string;
 };
 
@@ -47,18 +47,15 @@ const Page = () => {
 
                 // Hanya masukkan jika denda > 0
                 if (dendaRaw > 0) {
-                    const tanggalPinjam = data.tanggal_pinjam?.toDate();
-                    const tanggalKembali = data.tanggal_kembali?.toDate();
+                    const tanggalPinjam = data.tanggal_pinjam
+                    const tanggalKembali = data.tanggal_kembali
 
                     fetchedRows.push({
                         key: docSnap.id,
                         name: data.book_title || '-',
                         status: data.status || '-',
-                        tanggalPinjam: formatDate(tanggalPinjam),
-                        tanggalKembali:
-                            data.status === 'dipinjam' || data.status === 'belum diambil'
-                                ? '-'
-                                : formatDate(tanggalKembali),
+                        tanggal_pinjam: formatDateFirebase(tanggalPinjam),
+                        tanggal_kembali: formatDateFirebase(tanggalKembali),
                         denda: formatRupiah(dendaRaw),
                     });
                 }

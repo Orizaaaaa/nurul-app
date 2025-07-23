@@ -1,4 +1,5 @@
 import { storage } from "@/lib/firebase/firebaseConfig";
+import { Timestamp } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 export const formatDate = (tanggal: any) => {
@@ -171,17 +172,27 @@ export const columns = [
 ];
 
 
-export function formatDateFirebase(value: any): string {
-    if (value && typeof value === 'object' && value.seconds) {
-        const date = new Date(value.seconds * 1000);
-        return date.toLocaleDateString('id-ID', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
-        });
+export function formatDateFirebase(value: Timestamp | Date | null | undefined): string {
+    if (!value) return '-';
+
+    let date: Date;
+
+    if (value instanceof Timestamp) {
+        date = value.toDate();
+    } else if (value instanceof Date) {
+        date = value;
+    } else {
+        return '-';
     }
-    return value?.toString?.() ?? '-';
+
+    return date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+    });
 }
+
+
 
 export const uploadImage = (file: File) => {
     return new Promise<string>((resolve, reject) => {
