@@ -185,6 +185,7 @@ const page = () => {
                     <div className="w-full">
                         <Input
                             label="Cari Nama Siswa"
+                            size='sm'
                             value={nameFilter}
                             onChange={(e) => setNameFilter(e.target.value)}
                         />
