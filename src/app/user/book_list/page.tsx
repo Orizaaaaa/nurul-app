@@ -77,7 +77,7 @@ const Page = (props: Props) => {
                                     Stok Tersedia {item.stock_available}
                                 </h1>
                                 <h1 className="text-[11px] text-gray-400">
-                                    Rak nomor {item.rack}
+                                    Rak nomor {item.rak}
                                 </h1>
                             </div>
                         </div>

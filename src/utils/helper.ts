@@ -162,7 +162,7 @@ export const columns = [
     },
     {
         key: "tanggal_kembali",
-        label: "TANGGAL DIKEMBALIKAN",
+        label: "DEADLINE PENGEMBALIAN",
     },
     {
         key: "denda",
