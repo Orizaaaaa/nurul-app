@@ -3,7 +3,7 @@
 import { man } from '@/app/image';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { db } from '@/lib/firebase/firebaseConfig';
-import { formatDate, formatRupiah } from '@/utils/helper';
+import { formatDateFirebase, formatRupiah } from '@/utils/helper';
 import {
     getKeyValue,
     Table,
@@ -24,16 +24,16 @@ type Row = {
     key: string;
     name: string;
     status: string;
-    tanggalPinjam: string;
-    tanggalKembali: string;
+    tanggal_pinjam: string;
+    tanggal_kembali: string;
     denda: string;
 };
 
 const columns = [
-    { key: 'name', label: 'Judul Buku' },
-    { key: 'status', label: 'Status' },
-    { key: 'tanggalPinjam', label: 'Tanggal Pinjam' },
-    { key: 'tanggalKembali', label: 'Tanggal Kembali' },
+    { key: 'name', label: 'JUDUL BUKU' },
+    { key: 'status', label: 'STATUS' },
+    { key: 'tanggal_pinjam', label: 'TANGGAL PINJAM' },
+    { key: 'tanggal_kembali', label: 'TANGGAL KEMBALI' },
     { key: 'denda', label: 'Denda' },
 ];
 
@@ -67,8 +67,8 @@ function Page() {
                 allBorrowings.forEach((docSnap) => {
                     const data = docSnap.data();
                     const status = data.status;
-                    const tanggalPinjam = data.tanggal_pinjam?.toDate();
-                    const tanggalKembali = data.tanggal_kembali?.toDate();
+                    const tanggalPinjam = data.tanggal_pinjam
+                    const tanggalKembali = data.tanggal_kembali
 
                     // Tambahkan denda ke total jika ada
                     total += data.denda || 0;
@@ -79,8 +79,8 @@ function Page() {
                             key: docSnap.id,
                             name: data.book_title || '-',
                             status,
-                            tanggalPinjam: formatDate(tanggalPinjam),
-                            tanggalKembali: formatDate(tanggalKembali),
+                            tanggal_pinjam: formatDateFirebase(tanggalPinjam),
+                            tanggal_kembali: formatDateFirebase(tanggalKembali),
                             denda: formatRupiah(data.denda || 0),
                         });
                     }
