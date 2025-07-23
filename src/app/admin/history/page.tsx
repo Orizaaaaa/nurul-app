@@ -12,6 +12,9 @@ import {
 import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 
 import React, { useEffect, useState } from 'react';
+import { BiEditAlt } from 'react-icons/bi';
+import { FaTrash } from 'react-icons/fa6';
+import { IoLogoWhatsapp } from 'react-icons/io5';
 
 type Borrowing = {
     key: string;
@@ -150,12 +153,6 @@ const page = () => {
         return updated;
     };
 
-
-
-
-
-
-
     useEffect(() => {
         const fetchData = async () => {
             const querySnapshot = await getDocs(collection(db, "borrowings"));
@@ -172,6 +169,11 @@ const page = () => {
         fetchData();
     }, []);
 
+
+    const openModalEdit = (item: Borrowing) => {
+        console.log('modal dong');
+        onOpen()
+    }
 
     return (
         <DefaultLayout>
@@ -218,9 +220,10 @@ const page = () => {
                                 {(columnKey) =>
                                     columnKey === 'actions' ? (
                                         <TableCell>
-                                            <div className="flex gap-2">
-                                                <Button color="primary" size="sm" onClick={onOpen}>Edit</Button>
-                                                <Button color="danger" size="sm">Hapus</Button>
+                                            <div className="flex gap-2 justify-items-center items-center">
+                                                <button className='p-2 rounded-full bg-blue-900' onClick={() => openModalEdit(item)} ><BiEditAlt color='white' /></button>
+                                                <button className='p-2 rounded-full bg-red-700' ><FaTrash color='white' /></button>
+                                                <IoLogoWhatsapp color='green' size={28} />
                                             </div>
                                         </TableCell>
                                     ) : columnKey === 'denda' ? (
