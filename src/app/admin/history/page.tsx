@@ -3,7 +3,7 @@
 import ModalDefault from '@/components/fragments/modal/modal';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { db } from '@/lib/firebase/firebaseConfig';
-import { formatDate, formatDateStr } from '@/utils/helper';
+import { formatDate, formatDateStr, formatRupiah } from '@/utils/helper';
 import {
     getKeyValue, Table, TableBody, TableCell, TableColumn, TableHeader,
     TableRow, Input, Button, Pagination,
@@ -37,7 +37,8 @@ const page = () => {
         { key: 'book_title', label: 'JUDUL BUKU' },
         { key: 'status', label: 'STATUS' },
         { key: 'tanggal_pinjam', label: 'TANGGAL PINJAM' },
-        { key: 'tanggal_kembali', label: 'TANGGAL MENGEMBALIKAN' },
+        { key: 'tanggal_kembali', label: 'DEADLINE MENGEMBALIKAN' },
+        { key: 'denda', label: 'DENDA BUKU' },
         { key: 'actions', label: 'ACTIONS' },
     ];
 
@@ -220,6 +221,12 @@ const page = () => {
                                                 <Button color="primary" size="sm" onClick={onOpen}>Edit</Button>
                                                 <Button color="danger" size="sm">Hapus</Button>
                                             </div>
+                                        </TableCell>
+                                    ) : columnKey === 'denda' ? (
+                                        <TableCell>
+                                            <p>
+                                                {formatRupiah(getKeyValue(item, columnKey))}
+                                            </p>
                                         </TableCell>
                                     ) : (
                                         <TableCell>
