@@ -114,42 +114,40 @@ const page = (props: Props) => {
                 return;
             }
 
-            // ❗️Cek apakah user sudah meminjam buku yang sama
+            // Cek apakah user masih memiliki pinjaman buku yang sama dengan status belum dikembalikan
             const q = query(
                 collection(db, 'borrowings'),
                 where('user_id', '==', form.user_uid),
                 where('book_id', '==', form.book_id),
-                where('status', 'in', ['belum diambil', 'dipinjam'])
+                where('status', 'in', ['belum diambil', 'dipinjam', 'terlambat', 'hilang'])
             );
 
             const snapshot = await getDocs(q);
 
             if (!snapshot.empty) {
-                toast.error('Anda tidak bisa meminjam 2 buku yang sama sebelum dikembalikan!');
+                toast.error('Anda masih memiliki buku ini yang belum dikembalikan!');
                 return;
             }
 
-            // Hitung tanggal kembali (untuk admin saja, jadi user = null)
             const tanggalPinjam = new Date();
 
             const newBorrowing = {
                 email: form.email,
-                user_id: form.user_uid,
                 phone: form.phone,
+                user_id: form.user_uid,
                 user_name: form.user_name,
                 book_id: form.book_id,
                 book_title: form.book_title,
                 book_price: form.book_price,
                 jumlah: form.jumlah,
                 tanggal_pinjam: Timestamp.fromDate(tanggalPinjam),
-                tanggal_kembali: null, // biarkan admin yang isi saat dikembalikan
+                tanggal_kembali: null,
                 status: 'belum diambil',
                 denda: 0,
             };
 
             await addDoc(collection(db, 'borrowings'), newBorrowing);
 
-            // Kurangi stok buku
             await updateDoc(bookRef, {
                 stock_available: stockAvailable - form.jumlah,
             });
