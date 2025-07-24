@@ -74,7 +74,7 @@ function Page() {
                     total += data.denda || 0;
 
                     // Filter hanya status yang sudah dikembalikan, terlambat, atau hilang
-                    if (['dikembalikan', 'terlambat', 'hilang'].includes(status)) {
+                    if (['dikembalikan'].includes(status)) {
                         filteredRows.push({
                             key: docSnap.id,
                             name: data.book_title || '-',
