@@ -296,12 +296,16 @@ const page = () => {
                             <Button
                                 key={option.value}
                                 size="sm"
-                                color={statusFilter === option.value ? 'primary' : 'default'}
+                                variant="flat" // agar warna bisa di-overwrite
+                                className={`capitalize ${statusFilter === option.value
+                                    ? 'bg-primaryGreen text-white'
+                                    : 'bg-gray-200 text-primaryGreen'
+                                    }`}
                                 onClick={() => setStatusFilter(option.value)}
-                                className="capitalize"
                             >
                                 {option.label}
                             </Button>
+
                         ))}
                     </div>
                 </div>
@@ -318,7 +322,7 @@ const page = () => {
                                     columnKey === 'actions' ? (
                                         <TableCell>
                                             <div className="flex gap-2 justify-items-center items-center">
-                                                <button className='p-2 rounded-full bg-blue-900' onClick={() => openModalEdit(item)} ><BiEditAlt color='white' /></button>
+                                                <button className='p-2 rounded-full bg-blue-600' onClick={() => openModalEdit(item)} ><BiEditAlt color='white' /></button>
                                                 <button className='p-2 rounded-full bg-red-700' onClick={() => openModalDelete(item)} ><FaTrash color='white' /></button>
                                                 <IoLogoWhatsapp onClick={() => handleWhatsApp(item.phone)} className='cursor-pointer' color='green' size={28} />
                                             </div>
