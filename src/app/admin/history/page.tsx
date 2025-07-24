@@ -27,6 +27,7 @@ type Borrowing = {
     user_name: string;
     book_title: string;
     status: string;
+    phone: string
     tanggal_pinjam: any;
     tanggal_kembali: any;
 };
@@ -253,8 +254,23 @@ const page = () => {
         }
     };
 
+    const handleWhatsApp = (phone: string) => {
+        if (!phone) {
+            toast.error("Nomor telepon tidak tersedia");
+            return;
+        }
 
-    console.log('form', form);
+        // Hapus karakter non-digit, pastikan format internasional (62xxx)
+        const cleanedPhone = phone.replace(/\D/g, '');
+
+        // Redirect ke WhatsApp Web
+        const waUrl = `https://wa.me/${cleanedPhone}`;
+
+        window.open(waUrl, '_blank');
+    };
+
+
+    console.log('result', borrowings);
 
     return (
         <DefaultLayout>
@@ -304,7 +320,7 @@ const page = () => {
                                             <div className="flex gap-2 justify-items-center items-center">
                                                 <button className='p-2 rounded-full bg-blue-900' onClick={() => openModalEdit(item)} ><BiEditAlt color='white' /></button>
                                                 <button className='p-2 rounded-full bg-red-700' onClick={() => openModalDelete(item)} ><FaTrash color='white' /></button>
-                                                <IoLogoWhatsapp color='green' size={28} />
+                                                <IoLogoWhatsapp onClick={() => handleWhatsApp(item.phone)} className='cursor-pointer' color='green' size={28} />
                                             </div>
                                         </TableCell>
                                     ) : columnKey === 'denda' ? (
