@@ -81,6 +81,7 @@ const page = (props: Props) => {
     const [form, setForm] = React.useState({
         user_uid: '',                // ID user yang meminjam
         user_name: '',              // nama user
+        phone: '',
         book_id: '',                // ID buku
         book_title: '',             // Judul buku
         book_price: 0,              // Harga buku (untuk kasus hilang)
@@ -129,6 +130,7 @@ const page = (props: Props) => {
 
             const newBorrowing = {
                 user_id: form.user_uid,
+                phone: form.phone,
                 user_name: form.user_name,
                 book_id: form.book_id,
                 book_title: form.book_title,
@@ -162,6 +164,7 @@ const page = (props: Props) => {
             ...prevForm,
             user_uid: parsedUser.uid || '',
             user_name: parsedUser.name || '',
+            phone: parsedUser.phone || '',
             book_id: item.id,                // ID buku
             book_title: item.title,             // Judul buku
             book_price: item.price,
