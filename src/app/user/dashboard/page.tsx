@@ -11,7 +11,10 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { FaBookReader } from 'react-icons/fa'
+import { FaBook } from 'react-icons/fa6'
 import { IoPeople } from 'react-icons/io5'
+import { TbMoneybag } from 'react-icons/tb'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 type Props = {}
@@ -204,7 +207,7 @@ const page = (props: Props) => {
             <div className="grid grid-cols-1 md:grid-cols-3 my-5 gap-5">
                 <div className='bg-primaryGreen rounded-xl p-2' >
                     <div className="flex gap-3 items-center">
-                        <IoPeople size={20} color='white' />
+                        <FaBookReader size={20} color='white' />
                         <h1 className='text-white' >Jumlah Buku Yang Di Pinjam </h1>
 
                     </div>
@@ -212,7 +215,7 @@ const page = (props: Props) => {
                 </div>
                 <div className='bg-primaryGreen rounded-xl p-2' >
                     <div className="flex gap-3 items-center">
-                        <IoPeople size={20} color='white' />
+                        <FaBook size={20} color='white' />
                         <h1 className='text-white' >Jumlah Buku saat ini</h1>
 
                     </div>
@@ -221,7 +224,7 @@ const page = (props: Props) => {
 
                 <div className='bg-primaryGreen rounded-xl p-2' >
                     <div className="flex gap-3 items-center">
-                        <IoPeople size={20} color='white' />
+                        <TbMoneybag size={20} color='white' />
                         <h1 className='text-white' >Total Semua Denda</h1>
                     </div>
                     <h1 className='text-white text-3xl font-bold mt-3' >{formatRupiah(totalDendaUser)}</h1>
