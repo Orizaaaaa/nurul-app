@@ -2,15 +2,31 @@
 
 import { getAllBooks } from '@/api/method'
 import ButtonSecondary from '@/components/elements/buttonSecondary'
+import ModalDefault from '@/components/fragments/modal/modal'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { db } from '@/lib/firebase/firebaseConfig'
 import { truncateText } from '@/utils/helper'
 import { useDisclosure } from '@heroui/react'
+import { addDoc, collection, doc, getDoc, getDocs, query, Timestamp, updateDoc, where } from 'firebase/firestore'
 import React, { useEffect } from 'react'
+import toast from 'react-hot-toast'
 import { IoSearch } from 'react-icons/io5'
 
 type Props = {}
 
 const Page = (props: Props) => {
+    const { onOpen, onClose, isOpen } = useDisclosure();
+    const [form, setForm] = React.useState({
+        user_uid: '',                // ID user yang meminjam
+        user_name: '',              // nama user
+        book_id: '',                // ID buku
+        book_title: '',             // Judul buku
+        book_price: 0,              // Harga buku (untuk kasus hilang)
+        jumlah: 1,                  // Berapa banyak buku dipinjam
+        tanggal_pinjam: new Date(),// Tanggal pinjam
+        tanggal_kembali: null,     // Tanggal pengembalian (diisi nanti)
+        status: 'belum diambil',    // default status
+    });
     const [data, setData]: any = React.useState([])
     const [searchTerm, setSearchTerm] = React.useState('')
 
@@ -30,6 +46,84 @@ const Page = (props: Props) => {
     const filteredData = data.filter((item: any) =>
         item.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
+
+    const handlePinjam = async () => {
+        try {
+            const bookRef = doc(db, 'books', form.book_id);
+            const bookSnap = await getDoc(bookRef);
+
+            if (!bookSnap.exists()) {
+                toast.error('Buku tidak ditemukan');
+                return;
+            }
+
+            const bookData = bookSnap.data();
+            const stockAvailable = bookData.stock_available;
+
+            if (form.jumlah > stockAvailable) {
+                toast.error('Stok tidak mencukupi');
+                return;
+            }
+
+            // ❗️Cek apakah user sudah meminjam buku yang sama
+            const q = query(
+                collection(db, 'borrowings'),
+                where('user_id', '==', form.user_uid),
+                where('book_id', '==', form.book_id),
+                where('status', 'in', ['belum diambil', 'dipinjam'])
+            );
+
+            const snapshot = await getDocs(q);
+
+            if (!snapshot.empty) {
+                toast.error('Anda tidak bisa meminjam 2 buku yang sama sebelum dikembalikan!');
+                return;
+            }
+
+            // Hitung tanggal kembali (untuk admin saja, jadi user = null)
+            const tanggalPinjam = new Date();
+
+            const newBorrowing = {
+                user_id: form.user_uid,
+                user_name: form.user_name,
+                book_id: form.book_id,
+                book_title: form.book_title,
+                book_price: form.book_price,
+                jumlah: form.jumlah,
+                tanggal_pinjam: Timestamp.fromDate(tanggalPinjam),
+                tanggal_kembali: null, // biarkan admin yang isi saat dikembalikan
+                status: 'belum diambil',
+                denda: 0,
+            };
+
+            await addDoc(collection(db, 'borrowings'), newBorrowing);
+
+            // Kurangi stok buku
+            await updateDoc(bookRef, {
+                stock_available: stockAvailable - form.jumlah,
+            });
+
+            toast.success('Berhasil, anda tinggal datang dan konfirmasi ke admin perpus');
+            onClose();
+        } catch (error) {
+            console.error('Gagal memproses peminjaman:', error);
+            toast.error('Gagal meminjam buku');
+        }
+    };
+
+    const handleModalBorrow = (item: any) => {
+        const storedUser: any = localStorage.getItem('user');
+        const parsedUser = JSON.parse(storedUser);
+        setForm((prevForm) => ({
+            ...prevForm,
+            user_uid: parsedUser.uid || '',
+            user_name: parsedUser.name || '',
+            book_id: item.id,                // ID buku
+            book_title: item.title,             // Judul buku
+            book_price: item.price,
+        }));
+        onOpen()
+    }
 
     return (
         <DefaultLayout>
@@ -63,7 +157,8 @@ const Page = (props: Props) => {
                                 alt={item.title}
                             />
                         </div>
-                        <div className="p-2 flex flex-col flex-grow">
+                        <div className="p-2 flex flex-col flex-grow cursor-pointer"
+                            onClick={() => handleModalBorrow(item)}>
                             <div className="mb-2">
                                 <p className="text-[11px] text-gray-400 line-clamp-1">
                                     {item.author}
@@ -84,6 +179,16 @@ const Page = (props: Props) => {
                     </div>
                 ))}
             </div>
+
+            <ModalDefault isOpen={isOpen} onClose={onClose}>
+                <h1 className='text-xl font-bold text-primaryGreen italic mb-2' >Pinjam Buku</h1>
+                <h1>Apakah anda yakin akan meminjam buku ini ?</h1>
+                <div className="flex justify-end items-center gap-3">
+                    <button className='bg-primaryGreen text-white py-2 px-4 rounded-lg cursor-pointer'
+                        onClick={handlePinjam} >Ya</button>
+                    <button className='bg-secondaryGreen text-white py-2 px-4 rounded-lg cursor-pointer' onClick={onClose} >Tidak</button>
+                </div>
+            </ModalDefault>
         </DefaultLayout>
     )
 }
