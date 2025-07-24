@@ -17,6 +17,7 @@ type Props = {}
 const Page = (props: Props) => {
     const { onOpen, onClose, isOpen } = useDisclosure();
     const [form, setForm] = React.useState({
+        email: '',
         phone: '',
         user_uid: '',                // ID user yang meminjam
         user_name: '',              // nama user
@@ -85,6 +86,7 @@ const Page = (props: Props) => {
             const tanggalPinjam = new Date();
 
             const newBorrowing = {
+                email: form.email,
                 phone: form.phone,
                 user_id: form.user_uid,
                 user_name: form.user_name,
@@ -118,6 +120,7 @@ const Page = (props: Props) => {
         const parsedUser = JSON.parse(storedUser);
         setForm((prevForm) => ({
             ...prevForm,
+            email: parsedUser.email || '',
             phone: parsedUser.phone,
             user_uid: parsedUser.uid || '',
             user_name: parsedUser.name || '',
