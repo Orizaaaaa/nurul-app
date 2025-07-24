@@ -10,7 +10,9 @@ import { formatDate, formatDateStr, formatRupiah } from '@/utils/helper';
 import {
     getKeyValue, Table, TableBody, TableCell, TableColumn, TableHeader,
     TableRow, Input, Button, Pagination,
-    useDisclosure
+    useDisclosure,
+    Autocomplete,
+    AutocompleteItem
 } from '@heroui/react';
 import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 
@@ -39,6 +41,9 @@ const page = () => {
     const [nameFilter, setNameFilter] = useState<string>('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);
+    const [form, setForm] = useState({
+        status: ''
+    })
 
     // Reordered columns: peminjaman first, then pengembalian
     const columns = [
@@ -188,7 +193,23 @@ const page = () => {
         onWarningOpen()
     }
 
+    const dataTipe = [
+        { key: 'dipinjam', label: 'Dipinjam', value: 'dipinjam' },
+        { key: 'belum diambil', label: 'Belum diambil', value: 'belum diambil' },
+        { key: 'dikembalikan', label: 'Dikembalikan', value: 'dikembalikan' },
+        { key: 'terlambat', label: 'Terlambat', value: 'terlambat' },
+        { key: 'hilang', label: 'Hilang', value: 'hilang' },
+    ];
 
+    const onSelectionChange = (item: string) => {
+        console.log('item', item);
+        setForm({
+            ...form,
+            status: item
+        });
+    };
+
+    console.log('form', form);
 
     return (
         <DefaultLayout>
@@ -277,9 +298,19 @@ const page = () => {
 
             <ModalDefault isOpen={isOpen} onClose={onClose} >
                 <h1 className='text-xl font-medium'>Edit Peminjaman</h1>
+                <Autocomplete
+                    placeholder="Pilih Tipe Surat"
+                    className="w-full"
+                    onSelectionChange={(e: any) => onSelectionChange(e)}
+                    value={form.status}
+                >
+                    {dataTipe.map((item) => (
+                        <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>
+                    ))}
+                </Autocomplete>
                 <div className="flex justify-end gap-2">
                     <ButtonSecondary className='py-1 px-2 rounded-xl ' onClick={onWarningClose} >Batal</ButtonSecondary>
-                    <ButtonPrimary className='py-1 px-2 rounded-xl'   >Hapus</ButtonPrimary>
+                    <ButtonPrimary className='py-1 px-2 rounded-xl' >Ya</ButtonPrimary>
                 </div>
             </ModalDefault>
 
