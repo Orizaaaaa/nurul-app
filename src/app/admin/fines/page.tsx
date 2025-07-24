@@ -22,7 +22,7 @@ const columns = [
     { key: 'status', label: 'STATUS' },
     { key: 'tanggal_pinjam', label: 'TANGGAL PINJAM' },
     { key: 'tanggal_kembali', label: 'TANGGAL KEMBALI' },
-    { key: 'denda', label: 'Denda' },
+    { key: 'denda', label: 'DENDA' },
 ];
 const page = (props: Props) => {
     const [rows, setRows] = useState<Row[]>([]);
