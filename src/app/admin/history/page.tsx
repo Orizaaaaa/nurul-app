@@ -347,7 +347,9 @@ const page = () => {
                 </div>
 
                 {/* Tabel Peminjaman */}
-                <Table aria-label="Tabel Riwayat Peminjaman">
+                <Table isCompact aria-label="Tabel Riwayat Peminjaman" classNames={{
+                    th: "bg-secondaryGreen text-white",
+                }}>
                     <TableHeader columns={columns}>
                         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                     </TableHeader>

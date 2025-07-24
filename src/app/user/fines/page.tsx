@@ -73,7 +73,9 @@ const Page = () => {
                 <h1 className="text-xl font-bold text-primaryGreen italic mb-2">
                     Denda Peminjaman
                 </h1>
-                <Table>
+                <Table classNames={{
+                    th: "bg-secondaryGreen text-white",
+                }}>
                     <TableHeader columns={columns}>
                         {(column) => (
                             <TableColumn key={column.key}>{column.label}</TableColumn>

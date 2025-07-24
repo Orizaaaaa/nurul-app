@@ -1,12 +1,21 @@
-'use client'
-import DefaultLayout from '@/components/layouts/DefaultLayout'
+'use client';
+
+import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { db } from '@/lib/firebase/firebaseConfig';
 import { formatDateFirebase, formatRupiah } from '@/utils/helper';
-import { getKeyValue, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react'
-
-type Props = {}
+import {
+    getKeyValue,
+    Table,
+    TableBody,
+    TableCell,
+    TableColumn,
+    TableHeader,
+    TableRow,
+    Pagination,
+    Input,
+} from '@heroui/react';
+import { collection, getDocs } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 
 type Row = {
     key: string;
@@ -14,69 +23,108 @@ type Row = {
     status: string;
     tanggal_pinjam: string;
     tanggal_kembali: string;
+    tanggal_kembali_raw: Date;
     denda: string;
+    user_name: string;
 };
 
 const columns = [
     { key: 'name', label: 'JUDUL BUKU' },
+    { key: 'user_name', label: 'NAMA SISWA' },
     { key: 'status', label: 'STATUS' },
     { key: 'tanggal_pinjam', label: 'TANGGAL PINJAM' },
     { key: 'tanggal_kembali', label: 'TANGGAL KEMBALI' },
     { key: 'denda', label: 'DENDA' },
 ];
-const page = (props: Props) => {
+
+const PAGE_SIZE = 10;
+
+const DendaPage = () => {
     const [rows, setRows] = useState<Row[]>([]);
+    const [filteredRows, setFilteredRows] = useState<Row[]>([]);
+    const [nameFilter, setNameFilter] = useState<string>('');
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
     useEffect(() => {
-        const fetchDashboardData = async () => {
+        const fetchData = async () => {
             try {
-                const allBorrowings = await getDocs(collection(db, 'borrowings'));
+                const snapshot = await getDocs(collection(db, 'borrowings'));
+                const result: Row[] = [];
 
-                let total = 0;
-                const filteredRows: Row[] = [];
-
-                allBorrowings.forEach((docSnap) => {
+                snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    const tanggalPinjam = data.tanggal_pinjam;
-                    const tanggalKembali = data.tanggal_kembali;
                     const denda = data.denda || 0;
 
-                    // Hanya ambil data yang memiliki denda > 0
                     if (denda > 0) {
-                        total += denda;
-
-                        filteredRows.push({
+                        const tanggalKembali = new Date(data.tanggal_kembali.seconds * 1000);
+                        result.push({
                             key: docSnap.id,
                             name: data.book_title || '-',
+                            user_name: data.user_name || '-',
                             status: data.status || '-',
-                            tanggal_pinjam: formatDateFirebase(tanggalPinjam),
-                            tanggal_kembali: formatDateFirebase(tanggalKembali),
+                            tanggal_pinjam: formatDateFirebase(data.tanggal_pinjam),
+                            tanggal_kembali: formatDateFirebase(data.tanggal_kembali),
+                            tanggal_kembali_raw: tanggalKembali,
                             denda: formatRupiah(denda),
                         });
                     }
                 });
 
-                setRows(filteredRows);
+                // Sort: status "dikembalikan" paling bawah, lainnya urut tanggal_kembali ASC
+                result.sort((a, b) => {
+                    if (a.status === 'dikembalikan' && b.status !== 'dikembalikan') return 1;
+                    if (a.status !== 'dikembalikan' && b.status === 'dikembalikan') return -1;
+                    return a.tanggal_kembali_raw.getTime() - b.tanggal_kembali_raw.getTime();
+                });
+
+                setRows(result);
             } catch (error) {
-                console.error('Error fetching dashboard data:', error);
+                console.error('Gagal mengambil data denda:', error);
             }
         };
 
-        fetchDashboardData();
+        fetchData();
     }, []);
 
+    // Apply filter dan pagination
+    useEffect(() => {
+        let filtered = [...rows];
+
+        if (nameFilter.trim() !== '') {
+            filtered = filtered.filter((item) =>
+                item.user_name.toLowerCase().includes(nameFilter.toLowerCase())
+            );
+        }
+
+        setFilteredRows(filtered);
+        setCurrentPage(1); // Reset halaman ke 1 saat filter berubah
+    }, [nameFilter, rows]);
+
+    // Hitung data untuk halaman saat ini
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const currentItems = filteredRows.slice(startIndex, startIndex + PAGE_SIZE);
 
     return (
         <DefaultLayout>
             <div className="mt-5 mb-4">
-                <h1 className='text-xl font-bold text-primaryGreen italic mb-2' >Semua denda</h1>
-                <Table>
+                <h1 className="text-xl font-bold text-primaryGreen italic mb-4">Semua Denda</h1>
+
+                <div className="mb-4 w-full">
+                    <Input
+                        label="Cari Nama Siswa"
+                        size="sm"
+                        value={nameFilter}
+                        onChange={(e) => setNameFilter(e.target.value)}
+                    />
+                </div>
+
+                <Table isCompact classNames={{
+                    th: "bg-secondaryGreen text-white",
+                }}>
                     <TableHeader columns={columns}>
-                        {(column) => (
-                            <TableColumn key={column.key}>{column.label}</TableColumn>
-                        )}
+                        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                     </TableHeader>
-                    <TableBody items={rows}>
+                    <TableBody items={currentItems} emptyContent="Tidak ada data denda.">
                         {(item) => (
                             <TableRow key={item.key}>
                                 {(columnKey) => (
@@ -86,9 +134,19 @@ const page = (props: Props) => {
                         )}
                     </TableBody>
                 </Table>
+
+                {filteredRows.length > PAGE_SIZE && (
+                    <div className="flex justify-end mt-4">
+                        <Pagination
+                            page={currentPage}
+                            total={Math.ceil(filteredRows.length / PAGE_SIZE)}
+                            onChange={(page) => setCurrentPage(page)}
+                        />
+                    </div>
+                )}
             </div>
         </DefaultLayout>
-    )
-}
+    );
+};
 
-export default page
+export default DendaPage;
