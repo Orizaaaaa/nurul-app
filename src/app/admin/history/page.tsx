@@ -262,7 +262,18 @@ const page = () => {
         }
 
         try {
-            await updateDoc(borrowingRef, { status: form.status });
+            const updates: any = { status: form.status };
+
+            // Jika status diubah menjadi "dipinjam", tambahkan tanggal_kembali 7 hari dari hari ini
+            if (form.status === "dipinjam") {
+                const today = new Date();
+                const returnDate = new Date(today);
+                returnDate.setDate(today.getDate() + 8);
+
+                updates.tanggal_kembali = returnDate;
+            }
+
+            await updateDoc(borrowingRef, updates);
             toast.success("Status berhasil diperbarui!");
             fetchData();
             onClose();
@@ -272,6 +283,7 @@ const page = () => {
             toast.error("Gagal memperbarui status");
         }
     };
+
 
     const handleDelete = async () => {
         try {
