@@ -1,6 +1,9 @@
 'use client';
 
+import ButtonPrimary from '@/components/elements/buttonPrimary';
+import ButtonSecondary from '@/components/elements/buttonSecondary';
 import ModalDefault from '@/components/fragments/modal/modal';
+import ModalAlert from '@/components/fragments/modal/modalAlert';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { db } from '@/lib/firebase/firebaseConfig';
 import { formatDate, formatDateStr, formatRupiah } from '@/utils/helper';
@@ -26,6 +29,9 @@ type Borrowing = {
 };
 
 const page = () => {
+    const [bookId, setBookId] = useState('');
+    const { isOpen: isWarningOpen, onOpen: onWarningOpen, onClose: onWarningClose } = useDisclosure();
+    const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onClose: onUpdateClose } = useDisclosure();
     const { onOpen, onClose, isOpen } = useDisclosure();
     const [borrowings, setBorrowings] = useState<Borrowing[]>([]);
     const [filteredBorrowings, setFilteredBorrowings] = useState<Borrowing[]>([]);
@@ -170,10 +176,19 @@ const page = () => {
     }, []);
 
 
-    const openModalEdit = (item: Borrowing) => {
-        console.log('modal dong');
+    const openModalEdit = (item: any) => {
+        console.log('modal dong', item);
+        setBookId(item.book_id);
         onOpen()
     }
+
+    const openModalDelete = (item: any) => {
+        console.log('modal dong', item);
+        setBookId(item.book_id);
+        onWarningOpen()
+    }
+
+
 
     return (
         <DefaultLayout>
@@ -222,7 +237,7 @@ const page = () => {
                                         <TableCell>
                                             <div className="flex gap-2 justify-items-center items-center">
                                                 <button className='p-2 rounded-full bg-blue-900' onClick={() => openModalEdit(item)} ><BiEditAlt color='white' /></button>
-                                                <button className='p-2 rounded-full bg-red-700' ><FaTrash color='white' /></button>
+                                                <button className='p-2 rounded-full bg-red-700' onClick={() => openModalDelete(item)} ><FaTrash color='white' /></button>
                                                 <IoLogoWhatsapp color='green' size={28} />
                                             </div>
                                         </TableCell>
@@ -259,9 +274,22 @@ const page = () => {
                 )}
             </div>
 
+
             <ModalDefault isOpen={isOpen} onClose={onClose} >
-                <h1>Edit Peminjaman</h1>
+                <h1 className='text-xl font-medium'>Edit Peminjaman</h1>
+                <div className="flex justify-end gap-2">
+                    <ButtonSecondary className='py-1 px-2 rounded-xl ' onClick={onWarningClose} >Batal</ButtonSecondary>
+                    <ButtonPrimary className='py-1 px-2 rounded-xl'   >Hapus</ButtonPrimary>
+                </div>
             </ModalDefault>
+
+            <ModalAlert isOpen={isWarningOpen} onClose={onWarningClose} >
+                <h1 className='text-xl font-medium' >Apakah anda yakin akan menghapus riwayat user ini ?</h1>
+                <div className="flex justify-end gap-2">
+                    <ButtonSecondary className='py-1 px-2 rounded-xl ' onClick={onWarningClose} >Batal</ButtonSecondary>
+                    <ButtonPrimary className='py-1 px-2 rounded-xl'   >Hapus</ButtonPrimary>
+                </div>
+            </ModalAlert>
         </DefaultLayout>
     );
 };

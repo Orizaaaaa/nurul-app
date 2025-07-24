@@ -29,6 +29,10 @@
    font-family: var(--font-inter), sans-serif;
  }
 
+ button {
+   cursor: pointer;
+ }
+
  @media print {
    .a4-container {
      page-break-after: always;
