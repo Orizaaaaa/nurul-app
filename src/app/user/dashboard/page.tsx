@@ -82,6 +82,7 @@ const page = (props: Props) => {
     }, []);
 
     const [form, setForm] = React.useState({
+        email: '',
         user_uid: '',                // ID user yang meminjam
         user_name: '',              // nama user
         phone: '',
@@ -132,6 +133,7 @@ const page = (props: Props) => {
             const tanggalPinjam = new Date();
 
             const newBorrowing = {
+                email: form.email,
                 user_id: form.user_uid,
                 phone: form.phone,
                 user_name: form.user_name,
@@ -165,9 +167,10 @@ const page = (props: Props) => {
         const parsedUser = JSON.parse(storedUser);
         setForm((prevForm) => ({
             ...prevForm,
+            email: parsedUser.email || '',
+            phone: parsedUser.phone,
             user_uid: parsedUser.uid || '',
             user_name: parsedUser.name || '',
-            phone: parsedUser.phone || '',
             book_id: item.id,                // ID buku
             book_title: item.title,             // Judul buku
             book_price: item.price,

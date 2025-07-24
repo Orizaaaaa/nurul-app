@@ -11,6 +11,7 @@ import {
     TableColumn,
     TableHeader,
     TableRow,
+    Input,
 } from '@heroui/react';
 import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
@@ -21,11 +22,13 @@ type Row = {
     status: string;
     tanggal_pinjam: string;
     tanggal_kembali: string;
+    raw_tanggal_kembali: Date | null;
     denda: string;
 };
 
 const Page = () => {
     const [rows, setRows] = useState<Row[]>([]);
+    const [search, setSearch] = useState('');
 
     function formatDate(value: Timestamp | Date | null | undefined): string {
         if (!value) return '-';
@@ -72,8 +75,16 @@ const Page = () => {
                     status: data.status || '-',
                     tanggal_pinjam: formatDate(tanggalPinjam),
                     tanggal_kembali: formatDate(tanggalKembali),
+                    raw_tanggal_kembali: tanggalKembali instanceof Timestamp ? tanggalKembali.toDate() : null,
                     denda: formatRupiah(data.denda || 0),
                 });
+            });
+
+            // Urutkan berdasarkan tanggal kembali (terbaru ke terlama)
+            fetchedRows.sort((a, b) => {
+                const dateA = a.raw_tanggal_kembali ? a.raw_tanggal_kembali.getTime() : 0;
+                const dateB = b.raw_tanggal_kembali ? b.raw_tanggal_kembali.getTime() : 0;
+                return dateB - dateA;
             });
 
             setRows(fetchedRows);
@@ -82,6 +93,11 @@ const Page = () => {
         fetchBorrowings();
     }, []);
 
+    // Filter berdasarkan nama buku
+    const filteredRows = rows.filter((row) =>
+        row.name.toLowerCase().includes(search.toLowerCase())
+    );
+
     return (
         <DefaultLayout>
             <div className="mt-5 mb-4">
@@ -89,15 +105,27 @@ const Page = () => {
                     Riwayat Peminjaman
                 </h1>
 
-                <Table classNames={{
-                    th: "bg-secondaryGreen text-white",
-                }}>
+                <Input
+                    isClearable
+                    type="text"
+                    variant="bordered"
+                    placeholder="Cari berdasarkan nama buku..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="mb-4 w-full max-w-sm"
+                />
+
+                <Table
+                    classNames={{
+                        th: 'bg-secondaryGreen text-white',
+                    }}
+                >
                     <TableHeader columns={columns}>
                         {(column) => (
                             <TableColumn key={column.key}>{column.label}</TableColumn>
                         )}
                     </TableHeader>
-                    <TableBody items={rows}>
+                    <TableBody items={filteredRows}>
                         {(item) => (
                             <TableRow key={item.key}>
                                 {(columnKey) => (
