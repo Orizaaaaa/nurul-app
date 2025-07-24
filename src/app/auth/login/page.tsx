@@ -10,7 +10,6 @@ import { IoEye } from 'react-icons/io5';
 
 import Link from 'next/link';
 import { IoIosArrowBack } from 'react-icons/io';
-import { loginService } from '@/api/auth';
 
 import { Spinner } from '@heroui/react';
 import { realLogo } from '../../image';
@@ -105,15 +104,15 @@ const Login = () => {
 
 
     return (
-        <div className="login bg-primary">
+        <div className="login ">
             <div className="container mx-auto">
                 <div className="flex items-center py-3 cursor-pointer " onClick={() => router.back()}>
-                    <IoIosArrowBack size={20} color='white' />
-                    <p className='text-white' >Kembali</p>
+                    <IoIosArrowBack size={20} color='black' />
+                    <p className='text-black' >Kembali</p>
                 </div>
 
             </div>
-            <div className="container bg-primary mx-auto flex flex-col justify-center items-center  h-[99vh] ">
+            <div className="container  mx-auto flex flex-col justify-center items-center  h-[99vh] ">
                 <form className='p-6 bg-[#e9e9e9] w-full md:w-96 rounded-lg m-3 lg:m-0' onSubmit={handleLogin}>
                     <div className="logo flex justify-center my-5">
                         <Image src={realLogo} alt="logo" width={180} height={130} />
