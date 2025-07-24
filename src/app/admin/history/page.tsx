@@ -14,9 +14,10 @@ import {
     Autocomplete,
     AutocompleteItem
 } from '@heroui/react';
-import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { BiEditAlt } from 'react-icons/bi';
 import { FaTrash } from 'react-icons/fa6';
 import { IoLogoWhatsapp } from 'react-icons/io5';
@@ -31,7 +32,7 @@ type Borrowing = {
 };
 
 const page = () => {
-    const [bookId, setBookId] = useState('');
+    const [borrowingId, setBorrowingId] = useState('');
     const { isOpen: isWarningOpen, onOpen: onWarningOpen, onClose: onWarningClose } = useDisclosure();
     const { isOpen: isUpdateOpen, onOpen: onUpdateOpen, onClose: onUpdateClose } = useDisclosure();
     const { onOpen, onClose, isOpen } = useDisclosure();
@@ -163,19 +164,19 @@ const page = () => {
 
         return updated;
     };
+    const fetchData = async () => {
+        const querySnapshot = await getDocs(collection(db, "borrowings"));
+        const data = querySnapshot.docs.map((doc) => ({
+            key: doc.id,
+            ...doc.data(),
+        })) as Borrowing[];
 
+        const updatedData = await updateBorrowingStatuses(data);
+        setBorrowings(updatedData);
+        setFilteredBorrowings(updatedData);
+    };
     useEffect(() => {
-        const fetchData = async () => {
-            const querySnapshot = await getDocs(collection(db, "borrowings"));
-            const data = querySnapshot.docs.map((doc) => ({
-                key: doc.id,
-                ...doc.data(),
-            })) as Borrowing[];
 
-            const updatedData = await updateBorrowingStatuses(data);
-            setBorrowings(updatedData);
-            setFilteredBorrowings(updatedData);
-        };
 
         fetchData();
     }, []);
@@ -183,13 +184,13 @@ const page = () => {
 
     const openModalEdit = (item: any) => {
         console.log('modal dong', item);
-        setBookId(item.book_id);
+        setBorrowingId(item.key);
         onOpen()
     }
 
     const openModalDelete = (item: any) => {
         console.log('modal dong', item);
-        setBookId(item.book_id);
+        setBorrowingId(item.key);
         onWarningOpen()
     }
 
@@ -207,6 +208,32 @@ const page = () => {
             ...form,
             status: item
         });
+    };
+
+    const handleUpdate = async () => {
+        if (!form.status) {
+            toast.error("Status tidak boleh kosong");
+            return;
+        }
+
+        const borrowingRef = doc(db, "borrowings", borrowingId);
+        const docSnap = await getDoc(borrowingRef);
+
+        if (!docSnap.exists()) {
+            toast.error("Dokumen tidak ditemukan");
+            return;
+        }
+
+        try {
+            await updateDoc(borrowingRef, { status: form.status });
+            toast.success("Status berhasil diperbarui!");
+            fetchData();
+            onClose();
+            setForm({ status: '' });
+        } catch (error) {
+            console.error("Gagal memperbarui status:", error);
+            toast.error("Gagal memperbarui status");
+        }
     };
 
     console.log('form', form);
@@ -299,7 +326,7 @@ const page = () => {
             <ModalDefault isOpen={isOpen} onClose={onClose} >
                 <h1 className='text-xl font-medium'>Edit Peminjaman</h1>
                 <Autocomplete
-                    placeholder="Pilih Tipe Surat"
+                    placeholder="Pilih Status Peminjaman"
                     className="w-full"
                     onSelectionChange={(e: any) => onSelectionChange(e)}
                     value={form.status}
@@ -309,8 +336,8 @@ const page = () => {
                     ))}
                 </Autocomplete>
                 <div className="flex justify-end gap-2">
-                    <ButtonSecondary className='py-1 px-2 rounded-xl ' onClick={onWarningClose} >Batal</ButtonSecondary>
-                    <ButtonPrimary className='py-1 px-2 rounded-xl' >Ya</ButtonPrimary>
+                    <ButtonSecondary className='py-1 px-2 rounded-xl ' onClick={onClose} >Batal</ButtonSecondary>
+                    <ButtonPrimary className='py-1 px-4 rounded-xl' onClick={handleUpdate} >Ya</ButtonPrimary>
                 </div>
             </ModalDefault>
 
