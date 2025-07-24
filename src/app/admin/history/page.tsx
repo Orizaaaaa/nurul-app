@@ -14,7 +14,7 @@ import {
     Autocomplete,
     AutocompleteItem
 } from '@heroui/react';
-import { collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -236,6 +236,24 @@ const page = () => {
         }
     };
 
+    const handleDelete = async () => {
+        try {
+            const borrowingRef = doc(db, "borrowings", borrowingId);
+
+            await deleteDoc(borrowingRef);
+
+            toast.success("Data berhasil dihapus");
+
+            // Opsional: Refresh data setelah delete
+            fetchData(); // atau update state langsung
+            onWarningClose()
+        } catch (error) {
+            console.error("Gagal menghapus data:", error);
+            toast.error("Gagal menghapus data");
+        }
+    };
+
+
     console.log('form', form);
 
     return (
@@ -345,7 +363,7 @@ const page = () => {
                 <h1 className='text-xl font-medium' >Apakah anda yakin akan menghapus riwayat user ini ?</h1>
                 <div className="flex justify-end gap-2">
                     <ButtonSecondary className='py-1 px-2 rounded-xl ' onClick={onWarningClose} >Batal</ButtonSecondary>
-                    <ButtonPrimary className='py-1 px-2 rounded-xl'   >Hapus</ButtonPrimary>
+                    <ButtonPrimary className='py-1 px-2 rounded-xl' onClick={handleDelete}>Hapus</ButtonPrimary>
                 </div>
             </ModalAlert>
         </DefaultLayout>
