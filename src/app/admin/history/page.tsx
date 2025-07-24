@@ -97,9 +97,26 @@ const page = () => {
             );
         }
 
+        // Urutkan berdasarkan tanggal_kembali ASC, dan status "dikembalikan" di bawah
+        filtered.sort((a, b) => {
+            // Tempel status "dikembalikan" di bawah
+            if (a.status === "dikembalikan" && b.status !== "dikembalikan") return 1;
+            if (a.status !== "dikembalikan" && b.status === "dikembalikan") return -1;
+
+            const dateA = a.tanggal_kembali?.seconds
+                ? new Date(a.tanggal_kembali.seconds * 1000)
+                : new Date();
+            const dateB = b.tanggal_kembali?.seconds
+                ? new Date(b.tanggal_kembali.seconds * 1000)
+                : new Date();
+
+            return dateA.getTime() - dateB.getTime(); // ASC: tanggal terlama ke terbaru
+        });
+
         setFilteredBorrowings(filtered);
         setCurrentPage(1); // Reset to first page when filters change
     }, [statusFilter, nameFilter, borrowings]);
+
 
     // Pagination logic
     const indexOfLastItem = currentPage * itemsPerPage;
