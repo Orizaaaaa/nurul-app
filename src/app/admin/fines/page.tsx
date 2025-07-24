@@ -1,80 +1,87 @@
 'use client'
 import DefaultLayout from '@/components/layouts/DefaultLayout'
+import { db } from '@/lib/firebase/firebaseConfig';
+import { formatDateFirebase, formatRupiah } from '@/utils/helper';
 import { getKeyValue, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from '@heroui/react';
-import React from 'react'
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react'
 
 type Props = {}
 
-const page = (props: Props) => {
-    const rows = [
-        {
-            key: "1",
-            name: "Tony Reichert",
-            role: "CEO",
-            status: "Active",
-        },
-        {
-            key: "2",
-            name: "Zoey Lang",
-            role: "Technical Lead",
-            status: "Paused",
-        },
-        {
-            key: "3",
-            name: "Jane Fisher",
-            role: "Senior Developer",
-            status: "Active",
-        },
-        {
-            key: "4",
-            name: "William Howard",
-            role: "Community Manager",
-            status: "Vacation",
-        },
-    ];
+type Row = {
+    key: string;
+    name: string;
+    status: string;
+    tanggal_pinjam: string;
+    tanggal_kembali: string;
+    denda: string;
+};
 
-    const columns = [
-        {
-            key: "name",
-            label: "NAME",
-        },
-        {
-            key: "role",
-            label: "ROLE",
-        },
-        {
-            key: "status",
-            label: "STATUS",
-        },
-    ];
+const columns = [
+    { key: 'name', label: 'JUDUL BUKU' },
+    { key: 'status', label: 'STATUS' },
+    { key: 'tanggal_pinjam', label: 'TANGGAL PINJAM' },
+    { key: 'tanggal_kembali', label: 'TANGGAL KEMBALI' },
+    { key: 'denda', label: 'Denda' },
+];
+const page = (props: Props) => {
+    const [rows, setRows] = useState<Row[]>([]);
+
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                const allBorrowings = await getDocs(collection(db, 'borrowings'));
+
+                let total = 0;
+                const filteredRows: Row[] = [];
+
+                allBorrowings.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const tanggalPinjam = data.tanggal_pinjam;
+                    const tanggalKembali = data.tanggal_kembali;
+                    const denda = data.denda || 0;
+
+                    // Hanya ambil data yang memiliki denda > 0
+                    if (denda > 0) {
+                        total += denda;
+
+                        filteredRows.push({
+                            key: docSnap.id,
+                            name: data.book_title || '-',
+                            status: data.status || '-',
+                            tanggal_pinjam: formatDateFirebase(tanggalPinjam),
+                            tanggal_kembali: formatDateFirebase(tanggalKembali),
+                            denda: formatRupiah(denda),
+                        });
+                    }
+                });
+
+                setRows(filteredRows);
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
+
+
     return (
         <DefaultLayout>
             <div className="mt-5 mb-4">
-                <h1 className='text-xl font-bold text-primaryGreen italic mb-2' >Denda harian</h1>
-                <Table >
+                <h1 className='text-xl font-bold text-primaryGreen italic mb-2' >Semua denda</h1>
+                <Table>
                     <TableHeader columns={columns}>
-                        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-                    </TableHeader>
-                    <TableBody items={rows}>
-                        {(item) => (
-                            <TableRow key={item.key}>
-                                {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
-                            </TableRow>
+                        {(column) => (
+                            <TableColumn key={column.key}>{column.label}</TableColumn>
                         )}
-                    </TableBody>
-                </Table>
-            </div>
-
-            <div className="mt-5 mb-4">
-                <h1 className='text-xl font-bold text-primaryGreen italic mb-2' >Denda kemungkinan buku hilang</h1>
-                <Table >
-                    <TableHeader columns={columns}>
-                        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                     </TableHeader>
                     <TableBody items={rows}>
                         {(item) => (
                             <TableRow key={item.key}>
-                                {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
+                                {(columnKey) => (
+                                    <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+                                )}
                             </TableRow>
                         )}
                     </TableBody>
