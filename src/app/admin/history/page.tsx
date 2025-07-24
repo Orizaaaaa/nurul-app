@@ -14,6 +14,7 @@ import {
     Autocomplete,
     AutocompleteItem
 } from '@heroui/react';
+import axios from 'axios';
 import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 
 import React, { useEffect, useState } from 'react';
@@ -127,7 +128,6 @@ const page = () => {
                 if (item.status !== "dikembalikan") {
                     const tanggalPinjam = new Date(item.tanggal_pinjam.seconds * 1000);
 
-                    // Tanggal batas pengembalian adalah 7 hari setelah tanggal pinjam
                     const batasKembali = new Date(tanggalPinjam);
                     batasKembali.setDate(batasKembali.getDate() + 7);
 
@@ -142,11 +142,10 @@ const page = () => {
                         newDenda = diffDays * 1000;
                     } else if (diffDays > 10) {
                         newStatus = "hilang";
-                        newDenda = Number(item.book_price); // user ganti rugi penuh
+                        newDenda = Number(item.book_price);
                     }
 
-                    const shouldUpdate =
-                        newStatus !== item.status || newDenda !== item.denda;
+                    const shouldUpdate = newStatus !== item.status || newDenda !== item.denda;
 
                     if (shouldUpdate) {
                         const docRef = doc(db, "borrowings", item.key);
@@ -154,6 +153,26 @@ const page = () => {
                             status: newStatus,
                             denda: newDenda,
                         });
+
+                        if (item.email && item.user_name) {
+                            try {
+                                if (newStatus === "terlambat") {
+                                    await axios.post("/api/send-email", {
+                                        to: item.email,
+                                        subject: "Peringatan Buku Terlambat",
+                                        text: `Halo ${item.user_name}, buku yang Anda pinjam "${item.book_title}" sudah terlambat dikembalikan. Anda akan dikenakan denda sebesar Rp. 1.000 per hari. Segera kembalikan sebelum dianggap hilang.`,
+                                    });
+                                } else if (newStatus === "hilang") {
+                                    await axios.post("/api/send-email", {
+                                        to: item.email,
+                                        subject: "Pemberitahuan Buku Hilang",
+                                        text: `Halo ${item.user_name}, buku yang Anda pinjam "${item.book_title}" telah dianggap hilang karena keterlambatan lebih dari 10 hari. Anda diwajibkan mengganti buku tersebut sebesar Rp. ${item.book_price.toLocaleString('id-ID')}. Harap segera menghubungi petugas perpustakaan untuk penyelesaian.`,
+                                    });
+                                }
+                            } catch (emailError) {
+                                console.error("Gagal kirim email:", emailError);
+                            }
+                        }
 
                         return { ...item, status: newStatus, denda: newDenda };
                     }
@@ -165,6 +184,8 @@ const page = () => {
 
         return updated;
     };
+
+
     const fetchData = async () => {
         const querySnapshot = await getDocs(collection(db, "borrowings"));
         const data = querySnapshot.docs.map((doc) => ({
@@ -177,8 +198,6 @@ const page = () => {
         setFilteredBorrowings(updatedData);
     };
     useEffect(() => {
-
-
         fetchData();
     }, []);
 
